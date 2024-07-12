@@ -1,0 +1,162 @@
+<%- include('../partials/adminheader.ejs') %>
+
+<style>
+  th {
+    text-align: center;
+  }
+  td {
+    text-align: center;
+  }
+</style>
+
+<div style="margin-left: 5%; margin-right: 5%">
+  <div style="background-color: #76ac93">
+    <h1 class="text text-center pt-2" style="font-weight: bold">
+      Product List
+    </h1>
+    <p style="color: red;text-align: center;"> <%= updatemsg %> </p>
+    <div class="container">
+      <div class="row">
+        <div class="d-flex justify-content-end">
+          <div style="text-align: end">
+            <a
+              href="/admin/products/add-product"
+              data-mdb-button-init
+              data-mdb-ripple-init
+              class="btn btn-success btn-lg gradient-custom-4 text-body"
+              style="background-color: green !important; color: white"
+              >Add Product</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+  </div>
+  <!-- <a href="/admin/products/add-product">Add Products</a> -->
+  <table
+    class="customm-table table table-success table-striped"
+    border="1"
+    style="background-color: #76ac93"
+  >
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Image</th>
+        <th style="width: 20%">Description</th>
+        <th>Price</th>
+        <th>Category</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <!-- <th style="width: 15%;">Sold</th>
+                <th style="width: 15%;">Ratings</th> -->
+        <th style="text-align: center" colspan="2">Action</th>
+      </tr>
+    </thead>
+    
+    <tbody>
+      <% products.forEach(product => { %>
+      <tr>
+        <td><%= product._id %></td>
+        <td><%= product.name %></td>
+        <td><img src="<%= product.images[0] %>" alt="image" style="max-width: 60px;"> </td>
+        <td><%= product.description.slice(0,40) + (product.description.length > 50?'...':'') %></td>
+        <td><%= product.price %></td>
+        <td>
+        <% if(product.categories.length>0){ %>
+            <%= product.categories[0].name %>
+            <% }else{ %>
+            No Category
+            <% } %>
+            
+        </td>
+        <td><%= product.quantity %></td>
+        
+        <td id="status_<%= product._id %>">
+          <% if (product.active) { %> Active <% } else { %> Inactive <% } %>
+        </td>
+
+        <!-- <td><%= product.sold %></td>
+                    <td><%= product.ratings %></td> -->
+        <td>
+          <a href="/admin/products/edit-product?id=<%= product._id %>">Edit</a>
+        </td>
+        <!-- <td><a href="">Delete</a></td> -->
+
+        <td style="width: 6rem">
+          <% if (product.active) { %>
+          <button
+            class="btn"
+            id="activateButton_<%= product._id %>"
+            onclick="deactivateProduct('<%= product._id %>')"
+            style="background-color: red !important; color: white; width: 6rem"
+          >
+            Deactivate
+          </button>
+          <% } else { %>
+          <button
+            class="btn"
+            id="activateButton_<%= product._id %>"
+            onclick="activateProduct('<%= product._id %>')"
+            style="
+              background-color: green !important;
+              color: white;
+              width: 6rem;
+            "
+          >
+            Activate
+          </button>
+          <% } %>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    async function activateProduct(productId) {
+      try {
+        const response = await axios.put(
+          `/admin/products/${productId}/activate`
+        );
+        console.log("Product activated:", response.data);
+
+        const statusCell = document.getElementById(`status_${productId}`);
+        statusCell.textContent = "Active";
+
+        const button = document.getElementById(`activateButton_${productId}`);
+        button.innerText = "Deactivate";
+        button.style.backgroundColor = "red";
+        button.style.color = "white";
+        button.setAttribute("onclick", `deactivateProduct('${productId}')`);
+      } catch (error) {
+        console.error("Error activating product:", error);
+      }
+    }
+
+    async function deactivateProduct(productId) {
+      try {
+        const response = await axios.put(
+          `/admin/products/${productId}/deactivate`
+        );
+        console.log("Product deactivated:", response.data);
+
+        const statusCell = document.getElementById(`status_${productId}`);
+        statusCell.textContent = "Inactive";
+
+        const button = document.getElementById(`activateButton_${productId}`);
+        button.innerText = "Activate";
+        button.style.backgroundColor = "green";
+        button.style.color = "white";
+        button.setAttribute("onclick", `activateProduct('${productId}')`);
+      } catch (error) {
+        console.error("Error deactivating product:", error);
+      }
+    }
+  </script>
+
+  <%- include('../partials/adminfooter.ejs') %>
+</div>

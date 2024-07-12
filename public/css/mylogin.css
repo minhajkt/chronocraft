@@ -1,0 +1,47 @@
+.login_part {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Full viewport height */
+}
+
+.login_part .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Ensure the container takes full height */
+}
+
+.login_part .row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.login_part .col-lg-5, .login_part .col-md-6 {
+    margin-bottom: 20px;
+}
+
+.slider-area1 .hero-cap1 h2 {
+    font-size: 20px !important;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.btn.bsb-btn-xl.btn-outline-primary {
+    border-radius: 30px !important;
+}
+
+.link-button {
+    background: none !important;
+    border: none !important;
+    color: #198754 !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    font: inherit !important;
+
+}
+
+

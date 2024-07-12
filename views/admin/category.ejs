@@ -1,0 +1,89 @@
+<%- include('../partials/adminheader.ejs') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Management</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .active {
+            background-color: green;
+            color: white;
+        }
+        .inactive {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div style="margin-left: 5%; margin-right: 5%">
+        <div style="background-color: #76ac93">
+            <h1 class="text text-center pt-2" style="font-weight: bold">Category List</h1>
+            <p style="color: red; text-align: center;"> <%= updatemsg %> </p>
+            <div class="container">
+                <div class="row">
+                    <div class="d-flex justify-content-end">
+                        <div style="text-align: end">
+                            <a href="/admin/category/add-category" class="btn btn-success btn-lg gradient-custom-4 text-body" style="background-color: green !important; color: white">Add Category</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+        </div>
+
+        <table class="customm-table table table-success table-striped" border="1" style="background-color: #76ac93">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th style="width: 10rem;">Status</th>
+                    <th style="text-align: center;" colspan="2">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% categories.forEach(category => { %>
+                    <tr>
+                        <td><%= category._id %></td>
+                        <td><%= category.name %></td>
+                        <td><%= category.description %></td>
+                        <td id="status_<%= category._id %>">
+                            <% if (category.active) { %> Active <% } else { %> Inactive <% } %>
+                        </td>
+                        <td> <a href="/admin/category/edit-category?id=<%= category._id %>">Edit</a></td>
+                        <td>
+                            <form method="POST" action="/admin/category/toggle-status/<%= category._id %>">
+                                <input type="hidden" name="categoryId" value="<%= category._id %>">
+                                <% if (category.active) { %>
+                                    <button type="submit" class="btn active" style="background-color: red !important; color: white; width: 6rem;">Deactivate</button>
+                                <% } else { %>
+                                    <button type="submit" class="btn inactive" style="background-color: green !important; color: white; width: 6rem;">Activate</button>
+                                <% } %>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+
+
+
+    <%- include('../partials/adminfooter.ejs') %>
+

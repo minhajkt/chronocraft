@@ -1,0 +1,26 @@
+/* .page-container, .left-content, .inner-content, .header_bg, .header, .head-t {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.logo img {
+    max-width: 100%;
+    height: auto;
+} */
+
+ .head-t .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.logo img {
+    max-width: 100%;
+    height: auto;}

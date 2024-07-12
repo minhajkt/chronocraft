@@ -1,0 +1,122 @@
+<%- include('../partials/adminheader.ejs') %>
+<style>
+    body {
+        background-color: rgb(152, 180, 152);
+    }
+    .btn{
+        width: 5rem;
+    }
+</style>
+<!-- <div style="margin-left: 5%;margin-right: 5%;background-color: #76ac93; display: flex;justify-content: center;" class="pt-4">
+    <img src="/images/logo/logo.png" alt="" style="width: 30%;">
+</div> -->
+
+<div style="margin-left: 5%;margin-right: 5%;">
+    
+    <div style="background-color: #76ac93">
+    
+    <h1 class="text text-center pt-2" style="font-weight: bold;">Users List</h1>
+    
+    <div  style="text-align: center;display: flex; justify-content: flex-end;text-align: center;">
+    
+    
+    
+<!--     
+    <a href="/admin/home" data-mdb-button-init
+    data-mdb-ripple-init class="btn btn-success  btn-lg gradient-custom-4 text-body" >0</a> -->
+    </div><br>
+    <div class="container">
+    <table class="table table-success table-striped" border="1" style="background-color: #76ac93">
+        <thead>
+            <tr>
+                <th style="width: 20rem;">ID</th>
+                <th style="width: 15rem;">Name</th>
+                <th>Email</th>
+                <!-- <th style="width: 15%;">Mobile</th> -->
+                <th style="width: 10rem;">Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(users => { %>
+                <tr>
+                    <td><%= users._id %></td>
+                    <td><%= users.name %></td>
+                    <td><%= users.email %></td>
+                    <!-- <td>1234569870></td> -->
+                    <td id="status_<%= users._id %>">
+                        <!-- Displaying user status -->
+                        <% if (users.blocked) { %>
+                            Blocked
+                        <% } else { %>
+                            Active
+                        <% } %>
+                    </td>
+
+                    <td>
+                        <% if (users.blocked) { %>
+                            <button class="btn " id="blockButton_<%= users._id %>" onclick="unblockUser('<%= users._id %>')" style="background-color: green !important;" >Unblock</button>
+                        <% } else { %>
+                            <button class="btn " id="blockButton_<%= users._id %>" onclick="blockUser('<%= users._id %>')" style="background-color: red !important;">Block</button>
+                        <% } %>
+                    </td>
+                   
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+    </div>
+    </div>
+    </section>
+    <br>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+
+
+
+<script>
+    async function blockUser(userId) {
+        try {
+            const response = await axios.put(`/admin/users-list/${userId}/block`);
+            console.log('User blocked:', response.data);
+
+            const statusCell = document.getElementById(`status_${userId}`);
+            statusCell.textContent = 'Blocked';
+
+            const button = document.getElementById(`blockButton_${userId}`);
+            button.innerText = 'Unblock'; // Change button text
+            button.style.backgroundColor = 'green'
+            button.style.color = 'white'
+            button.setAttribute('onclick', `unblockUser('${userId}')`); // Update onclick handler
+        } catch (error) {
+            console.error('Error blocking user:', error);
+            // Handle error
+        }
+    }
+
+    async function unblockUser(userId) {
+        try {
+            const response = await axios.put(`/admin/users-list/${userId}/unblock`);
+            console.log('User unblocked:', response.data);
+
+            const statusCell = document.getElementById(`status_${userId}`);
+            statusCell.textContent = 'Active';
+
+            const button = document.getElementById(`blockButton_${userId}`);
+            button.innerText = 'Block'; // Change button text
+            button.style.backgroundColor = 'red'
+            button.style.color = 'white'
+            button.setAttribute('onclick', `blockUser('${userId}')`); // Update onclick handler
+        } catch (error) {
+            console.error('Error unblocking user:', error);
+            // Handle error
+        }
+    }
+</script>
+
+
+</body>
+</html>

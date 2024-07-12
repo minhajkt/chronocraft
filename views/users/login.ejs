@@ -1,0 +1,78 @@
+<%- include('../partials/loginheader.ejs') %>
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+<!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+<script src="https://cdn.jsdelivr.net/npm/appwrite@1.8.1/appwrite.min.js"></script>
+
+<link rel="stylesheet" href="/mycss/userlogin.css">
+
+<main>
+   
+
+    <!-- Login Part Area -->
+    <section class="login_part section_padding pt-0 pb-0" style="margin-top: -20px;">
+        <div class="col-md-6 mx-auto col-lg-4">
+            
+            <form id="form" class="p-0 p-md-5 border rounded-3 bg-body-tertiary" style="border-radius: 5%; background-color: rgb(239, 238, 238);" method="post">
+               <a href="/home"> <img class="mt-1 mb-4" src="/images/myimages/chronocraft logo.png" alt="" style="width: 90%; height: 50%;padding-left: 8%;"></a>
+                <div class="hero-cap text-center">
+                    <h2 style="font-size: 3rem;">Login</h2>
+                </div>
+                <p style="color: red;text-align: center;"> <%= blockMsg %> </p>
+                <% if(typeof messageLogout !== 'undefined' ){ %>
+  <p style="color: red; text-align: center;"> <%= messageLogout %></p>
+<% } %> 
+              <div class="error-message mt-3" id="error-message"></div>
+                <div class="input-control form-floating mb-0">
+                    <input type="text" class="form-control" id="email" placeholder="Email address" name="email">
+                    <div class="error"></div>
+                    <label for="email"></label>
+                    
+                </div>
+                <div class="input-control form-floating mb-0">
+                    <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+                    <div class="error"></div>
+                    <label for="password"></label>
+                    
+                </div>
+
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Log In</button>
+                <hr class="my-3">
+                <a href="/register">
+                    <p class="text-center">New to <span style="color: red; font-weight: bold;">Chronocraft</span>? Sign up</p>
+                </a>
+                <div class="container">
+                    <div class="col-12">
+                        <p class="mt-0 mb-2 text-center pb-4">Or sign in with</p>
+                        <div class="d-flex flex-column flex-md-row justify-content-center align-items-center">
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <small class="text-body-secondary mt-4">By clicking Sign up, you agree to the terms of use.</small>
+                </div>
+            </form>
+            <div style="margin-left: 42%;margin-top: -22%;">
+                <a href="/auth/google" class="btn bsb-btn-xl btn-outline-primary pt-2 pb-2" style="border-radius: 3%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
+                        <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />
+                    </svg>
+                    <!-- <button style="text-align: center;" id=""><span class="">Google</span></button> -->
+                </a>
+            </div>
+        </div>
+    </section>
+    
+</main>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/myjsscript/userloginValidation.js"></script>
+
+
+
+
+
+
