@@ -1,0 +1,523 @@
+<%- include('../partials/otherhead') %>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+  p {
+    padding: 0 !important;
+  }
+  .form-group {
+    padding: 0 !important;
+  }
+  body.modal-open {
+    padding-right: 0 !important;
+  }
+</style>
+
+<% if(success.length >0){ %>
+<div class="flash-message" id="flash-success"><%= success %></div>
+<% } %> <% if (error.length > 0) { %>
+<div class="flash-message" id="flash-error"><%= error %></div>
+<% } %>
+
+<div id="errorMessage" style="display: none; color: red"></div>
+<div id="notification-container" style="height: 40px"></div>
+
+<div class="container-fluid pt-5">
+  <div class="row px-xl-5">
+    <!-- Billing Address and Payment Sections in One Row -->
+    <div class="col-lg-8">
+      <div class="card border-light shadow-sm mb-4">
+        <div class="card-header" style="background-color: #edf1ff !important">
+          <h4 class="font-weight-semi-bold mb-0">Billing Address</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8 form-group mt-4 mb-0">
+              <p id="name" class="form-control-plaintext">
+                <span style="color: black; font-weight: bold">Name :</span> <%=
+                user.name %>
+              </p>
+            </div>
+            <div class="col-md-8 form-group mb-0">
+              <p id="email" class="form-control-plaintext">
+                <span style="color: black; font-weight: bold">Email : </span><%=
+                user.email %>
+              </p>
+            </div>
+            <div class="col-md-8 form-group mb-3">
+              <p id="mobile" class="form-control-plaintext">
+                <span style="color: black; font-weight: bold">Mobile :</span>
+                <%= user.mobile %>
+              </p>
+            </div>
+            <div class="col-md-12 mb-4">
+              <hr />
+            </div>
+            <div class="col-md-3 form-group mb-0" style="width: 200px">
+              <p
+                id="street"
+                class="form-control-plaintext"
+                style="width: 200px"
+              >
+                <span style="color: black; font-weight: bold">Street : </span
+                ><%= address.street %>
+              </p>
+            </div>
+            <div class="col-md-7 form-group mb-0">
+              <p id="city" class="form-control-plaintext">
+                <span style="color: black; font-weight: bold">City : </span><%=
+                address.city %>
+              </p>
+            </div>
+            <div class="col-md-3 form-group mb-0">
+              <p id="state" class="form-control-plaintext">
+                <span style="color: black; font-weight: bold">State : </span><%=
+                address.state %>
+              </p>
+            </div>
+            <div class="col-md-7 form-group mb-1">
+              <p id="pincode" class="form-control-plaintext">
+                <span style="color: black; font-weight: bold">Pincode : </span
+                ><%= address.pincode %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Section -->
+    <div class="col-lg-4">
+      <div class="card border-secondary mb-5">
+        <div class="card-header bg-secondary border-0">
+          <h4 class="font-weight-semi-bold m-0">Payment</h4>
+        </div>
+        <div class="card-body">
+          <form action="/confirm-order" id="payment-form" method="POST">
+            <div class="form-group">
+              <div class="custom-control custom-radio">
+                <input
+                  type="radio"
+                  class="custom-control-input"
+                  name="payment"
+                  id="cod"
+                  value="cod"
+                  checked
+                />
+                <label class="custom-control-label" for="cod"
+                  >Cash on Delivery</label
+                >
+                <% if(cart.finalPrice > 1000 || finalPrice > 1000){ %>
+                <p id="codMessage" style="color: red; font-size: x-small">
+                  COD not available for orders more than 1000
+                </p>
+                <% } %>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="custom-control custom-radio">
+                <input
+                  type="radio"
+                  class="custom-control-input"
+                  name="payment"
+                  id="online"
+                  value="online"
+                />
+                <label class="custom-control-label" for="online"
+                  >Online Payment</label
+                >
+              </div>
+            </div>
+            <% if(user.wallet >=0){ %>
+            <div class="form-group">
+              <div class="custom-control custom-radio">
+                <input
+                  type="radio"
+                  class="custom-control-input"
+                  name="payment"
+                  id="wallet"
+                  value="wallet"
+                />
+                <label class="custom-control-label" for="wallet"
+                  >Wallet Payment</label
+                >
+                <% if(cart.finalPrice > user.wallet || finalPrice >
+                user.wallet){ %>
+                <p id="walletMessage" style="color: red; font-size: x-small">
+                  Low Wallet Balance
+                </p>
+                <% } %>
+                <p style="color: green; font-weight: 700; font-size: smaller">
+                  Wallet Balance : ₹ <%= user.wallet %>
+                </p>
+              </div>
+            </div>
+            <% } %>
+
+            <input
+              type="hidden"
+              name="address[street]"
+              value="<%= address.street %>"
+            />
+            <input
+              type="hidden"
+              name="address[city]"
+              value="<%= address.city %>"
+            />
+            <input
+              type="hidden"
+              name="address[state]"
+              value="<%= address.state %>"
+            />
+            <input
+              type="hidden"
+              name="address[pincode]"
+              value="<%= address.pincode %>"
+            />
+            <input type="hidden" id="userWallet" value="<%= user.wallet %>" />
+
+            <div class="card-footer border-secondary bg-transparent">
+              <button
+                type="button"
+                id="place-order"
+                class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3"
+              >
+                Place Order
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="confirmModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="confirmModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Confirm Order</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">Are you sure you want to place the order?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" id="confirm-order">
+            Confirm Order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="confirmModalWallet"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="confirmModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Confirm Order</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to place the order using Wallet Balance?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="confirm-order-wallet"
+          >
+            Confirm Order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row px-xl-5">
+    <div class="col-lg-8">
+      <div class="card border-secondary mb-5">
+        <div class="card-header bg-secondary border-0">
+          <h4 class="font-weight-semi-bold m-0">Order Summary</h4>
+        </div>
+        <div class="card-body">
+          <h6 class="font-weight-medium mb-3 text-right">
+            Delivery in 3 days <span id="day" style="display: inline"></span>
+          </h6>
+          <% cart.product.forEach(item => { %>
+          <div class="d-flex justify-content-between mb-2">
+            <div class="d-flex align-items-center">
+              <img
+                src="<%= item.productId.images[0] %>"
+                alt=""
+                style="width: 80px; height: 80px; margin-right: 10px"
+              />
+              <div>
+                <p class="mb-0"><%= item.productId.name %></p>
+                <p class="mb-0 text-muted">
+                  ₹ <%= item.productId.price %> x <%= item.quantity %>
+                </p>
+              </div>
+            </div>
+            <p class="mb-0">₹ <%= item.productId.price * item.quantity %></p>
+          </div>
+          <% }) %>
+          <hr class="mt-0" />
+          <div class="d-flex justify-content-between mb-3">
+            <h6 class="font-weight-medium">Discount</h6>
+            <% if(cart.coupon){ %>
+            <h6 class="font-weight-medium" id="cartDiscount">
+              <%= discount %>
+            </h6>
+            <% } else {%>
+            <h6 class="font-weight-medium" id="cartDiscount">0</h6>
+            <% } %>
+          </div>
+          <div class="d-flex justify-content-between">
+            <h6 class="font-weight-medium">Shipping</h6>
+            <h6 class="font-weight-medium">Free</h6>
+          </div>
+        </div>
+        <div class="card-footer border-secondary bg-transparent">
+          <div class="d-flex justify-content-between mt-2">
+            <h5 class="font-weight-bold">Total</h5>
+            <h5 class="font-weight-bold" id="cartTotal">
+              <%= finalPrice || cart.totalPrice%>
+            </h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const cartTotal = parseFloat(
+      document.getElementById("cartTotal").innerText.replace("₹", "")
+    );
+    const codOption = document.getElementById("cod");
+    const codMessage = document.getElementById("codMessage");
+    const paymentForm = document.getElementById("payment-form");
+    const onlineOption = document.getElementById("online");
+    const placeOrderButton = document.getElementById("place-order");
+    const walletOption = document.getElementById("wallet");
+    const walletMessage = document.getElementById("walletMessage");
+    const userWallet = parseFloat(document.getElementById("userWallet").value);
+
+    if (cartTotal > 1000) {
+      codOption.disabled = true;
+      codOption.checked = false;
+      onlineOption.checked = true;
+      codMessage.style.display = "block";
+    }
+
+    if (cartTotal > userWallet) {
+      walletOption.disabled = true;
+      walletOption.checked = false;
+      onlineOption.checked = true;
+      walletMessage.style.display = "block";
+    }
+
+    placeOrderButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      const paymentMethod = document.querySelector(
+        'input[name="payment"]:checked'
+      ).value;
+
+      if (paymentMethod === "online") {
+        handleOnlinePayment();
+      } else if (paymentMethod === "wallet") {
+        $("#confirmModalWallet").modal("show");
+      } else {
+        $("#confirmModal").modal("show");
+      }
+    });
+
+    document
+      .getElementById("confirm-order")
+      .addEventListener("click", function () {
+        $("#confirmModal").modal("hide");
+        paymentForm.submit();
+      });
+
+    document
+      .getElementById("confirm-order-wallet")
+      .addEventListener("click", function () {
+        $("#confirmModalWallet").modal("hide");
+        paymentForm.submit();
+      });
+
+    function handleOnlinePayment() {
+      const formData = new FormData(paymentForm);
+      const data = {
+        address: {
+          street: formData.get("address[street]"),
+          city: formData.get("address[city]"),
+          state: formData.get("address[state]"),
+          pincode: formData.get("address[pincode]"),
+        },
+        payment: "online",
+      };
+
+      fetch("/create-razorpay-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            var options = {
+              key: "rzp_test_VApTinR8991MNk",
+              amount: data.amount,
+              currency: data.currency,
+              name: "ChronoCraft",
+              description: "Transaction",
+              order_id: data.order_id,
+              handler: function (response) {
+                confirmOrderOnline(response, data.address);
+              },
+              modal: {
+                ondismiss: function () {
+                  confirmOrderOnline(
+                    {
+                      razorpay_order_id: data.order_id,
+                      razorpay_payment_id: "",
+                      razorpay_signature: "",
+                    },
+                    data.address
+                  );
+                },
+              },
+              prefill: {
+                name: formData.get("name"),
+                email: formData.get("email"),
+                contact: formData.get("mobile"),
+              },
+              theme: {
+                color: "#3399cc",
+              },
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+          } else {
+            alert("Failed to create Razorpay order");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    function confirmOrderOnline(paymentDetails, address) {
+      fetch("/confirm-order-online", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          razorpay_order_id: paymentDetails.razorpay_order_id,
+          razorpay_payment_id: paymentDetails.razorpay_payment_id,
+          razorpay_signature: paymentDetails.razorpay_signature,
+          address: address,
+          payment: "online",
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            if (data.paymentStatus === "Pending") {
+              alert("Payment Failed or Cancelled. Redirecting to your orders.");
+              window.location.href = "/view-orders";
+            } else {
+              window.location.href = "/payment-success";
+            }
+          } else {
+            alert("Order placement failed: " + data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  });
+
+  function showToast(message, type = "info", duration = 5000) {
+    Toastify({
+      text: message,
+      duration: duration,
+      close: true,
+      gravity: "top",
+      position: "right",
+      backgroundColor: type === "error" ? "#f44336" : "#2196F3",
+    }).showToast();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const flashMessage = localStorage.getItem("flashMessage");
+    if (flashMessage) {
+      showToast(flashMessage, "error");
+      localStorage.removeItem("flashMessage");
+    }
+  });
+</script>
+
+<script>
+  setTimeout(() => {
+    const flashMessages = document.querySelectorAll(".flash-message");
+    flashMessages.forEach((message) => {
+      message.remove();
+    });
+  }, 5000);
+</script>
+
+<script>
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const today = new Date().getDay() + 3;
+  document.getElementById("day").textContent = days[today];
+</script>
+
+<%- include('../partials/proddetailsfoot') %>

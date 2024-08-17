@@ -1,0 +1,164 @@
+<%- include('../partials/adminheader.ejs') %>
+<style>
+    body {
+        background-color: rgb(152, 180, 152);
+        height: 100vh
+        ;
+    }
+    .btn{
+        width: 5rem;
+    }
+    
+</style>
+
+<% if(success.length >0){ %>
+    <div
+        class="flash-message" id="flash-success"> <%= success %>
+    </div>
+    <% } %>
+    <% if (error.length > 0) { %>
+        <div class="flash-message" id="flash-error"><%= error %></div>
+      <% } %>
+
+
+<div style="margin-left: 2%;margin-right: 1%">
+    
+    <div style="background-color: #76ac93">
+    
+    <h1 class="text text-center pt-2" style="font-weight: bold;">Order List</h1>
+    
+    <div  style="text-align: center;display: flex; justify-content: flex-end;text-align: center;">
+    
+
+    </div><br>
+    <div class="col-lg-8 mb-3">
+    <form action="/admin/order-details" method="get" class="d-flex justify-content-start mr-4 mt-4">
+    <input type="text" name="search" id="" placeholder="Search Orders ..." style="border-radius: 8px;width: 60%;" value="<%= searchQuery %> ">
+    <input type="hidden" name="page" value="1">    
+    <button type="submit" class="btn btn-primary ms-3">Search</button>
+</div>
+    </form>
+
+    <div class="container-fluid order-history">
+        <% if (orders.length === 0) { %>
+            <p>No orders found.</p>
+          <% } else { %>
+    <table class="table table-success table-striped" border="1" style="background-color: #76ac93"> 
+        <thead>
+            <tr>
+                <th style="width: 5rem;">Name</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Ordered On</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Details</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% orders.forEach(order => { %>
+              <% order.items.forEach(item => { %>
+                <tr>
+                  <td><%= order.user.name %></td>
+                  <td><%= item.product.name %></td>
+                  <td><%= item.quantity %></td>
+                  
+                  <td><%= order.createdAt.toDateString() %></td>
+                  <td><%= order.paymentMethod %></td>
+                  <td style="color: <%= order.status === 'Cancelled' ? 'red' : (order.status === 'Delivered' ? 'green' : 'darkgoldenrod') %>"><%= order.status %></td>
+                  <td><a href="/admin/single-order-details/<%= order._id%>">View Details</a></td>
+                  <td>
+                    <% if(order.status === 'Cancelled' || order.status === 'Returned' || order.status === 'Delivered'){%>
+                        <select  name="" id="" disabled></select>
+                    <%}else{%>
+                    <select class="status-dropdown" data-order-id="<%= order._id %>" style="background-color: #76ac93;">
+                        <option value="Yet to be Delivered" <%= order.status === 'Yet to be Delivered' || 'Pending' ? 'selected' : '' %>>Yet to be Delivered</option>
+                        <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                        <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                        <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    </select>
+                    <%} %>
+                </td>
+                
+                </tr>
+              <% }) %>
+            <% }) %>
+        </tbody>
+    </table>
+    <% } %>
+</div>
+
+
+<div class="d-flex justify-content-center">
+    <% if (totalPages > 1) { %>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="/admin/order-details?page=<%= currentPage - 1 %>&search=<%= searchQuery %> "  style="background-color: #76ac93;color: black;">Previous</a>
+                    </li>
+                <% } %>
+                
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="/admin/order-details?page=<%= i %>&search=<%= searchQuery %>"  style="background-color: #76ac93;color: black;"><%= i %></a>
+                    </li>
+                <% } %>
+                
+                <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="/admin/order-details?page=<%= currentPage + 1 %>&search=<%= searchQuery %>"  style="background-color: #76ac93;color: black;">Next</a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    <% } %>
+</div>
+
+
+
+
+<script>
+    document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('change', function() {
+            const orderId = this.getAttribute('data-order-id');
+            const newStatus = this.value;
+
+
+            if (confirm(`Are you sure you want to change the status to ${newStatus}?`)) {
+                fetch(`/admin/change-status/${orderId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload('/admin/order-details')
+                    } else {
+                        alert('Failed to update status');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                this.value = this.querySelector('option[selected]').value;
+            }
+        });
+    });
+</script>
+
+<script>
+    setTimeout(()=>{
+        const flashMessages = document.querySelectorAll('.flash-message')
+        flashMessages.forEach(message=>{
+                message.remove()
+            })
+    },5000)
+</script>
+
+
+  

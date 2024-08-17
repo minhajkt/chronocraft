@@ -1,53 +1,48 @@
-const mongoose = require('mongoose'); // Erase if already required
-const Schema = mongoose.Schema
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const productSchema = new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
+const productSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
     },
     slug: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
-    description:{
-        type:String,
-        required:true,
+    description: {
+      type: String,
+      required: true,
     },
-    price:{
-        type:Number,
-        required:true,
+    price: {
+      type: Number,
+      required: true,
     },
     quantity: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
-    // sold: {
-    //     type: Number,
-    //     default: 0,
-    // },
-    images: [{
+    images: [
+      {
         type: String,
-        required: true
-    }],
-    active: {
-        type: Boolean,
-        default: true
+        required: true,
       },
-    categories: [
-        { type: Schema.Types.ObjectId, ref: 'Category',
-        required: true }
     ],
-    // ratings: [
-    //     {
-    //     star: Number,
-    //     postedby: {type:mongoose.Schema.Types.ObjectId, ref:"User"}
-    //     },
-    // ],
-},
-    {timestamps: true}
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    categories: [
+      { type: Schema.Types.ObjectId, ref: "Category", required: true },
+    ],
+    offer: {
+      offerDiscount: { type: Number, default: 0 },
+      active: { type: Boolean, default: true },
+    },
+  },
+  { timestamps: true }
 );
 
-
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model("Product", productSchema);

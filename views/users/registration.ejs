@@ -1,62 +1,94 @@
 <%- include('../partials/loginheader.ejs') %>
-<link rel="stylesheet" href="/mycss/userreg.css">
+<link rel="stylesheet" href="/mycss/userreg.css" />
 
 <main>
-    
-    <!--================login_part Area =================-->
-    <section class="login_part section_padding pt-0 pb-0">
-        <div class="col-md-6 mx-auto col-lg-4">
-            <% if(typeof message !== 'undefined') { %>
-                <p><%= message %></p> 
-            <% } %>
-            <% if(typeof msg !== 'undefined') { %>
-                <p><%= msg %></p> 
-            <% } %>
+  <!--================login_part Area =================-->
+  <section class="login_part section_padding pt-0 pb-0">
+    <div class="col-md-6 mx-auto col-lg-4">
+      <% if(typeof message !== 'undefined') { %>
+      <p><%= message %></p>
+      <% } %> <% if(typeof msg !== 'undefined') { %>
+      <p><%= msg %></p>
+      <% } %>
 
-            <form id="registrationForm" class="p-0 p-md-5 border rounded-3 bg-body-tertiary" style="border-radius: 5%; background-color: rgb(239, 238, 238);" method="post" action="/register">
-                <a href="/home"> <img class="mt-1 mb-4" src="/images/myimages/chronocraft logo.png" alt="" style="width: 90%; height: 50%;padding-left: 8%;"></a>
-                <div class="hero-cap text-center">
-                    <h2 style="font-size: 3rem;">Registration</h2>
-                </div>
-                <div class="error-message mt-3 mb-3" id="error-message"></div>
-
-                <div class="form-floating mb-1 input-control">
-                    <input type="text" class="form-control" id="username" placeholder="Name" name="name" >
-                    <div class="error"></div>
-                    <label for="username"></label>
-                </div>
-                <div class="form-floating mb-1 input-control">
-                    <input type="email" class="form-control" id="email" placeholder="Email address" name="email" >
-                    <div class="error"></div>
-                    <label for="email"></label>
-                </div>
-                <div class="form-floating mb-1 input-control">
-                    <input type="password" class="form-control" id="password" placeholder="Password" name="password" >
-                    <div class="error"></div>
-                    <label for="password"></label>
-                </div>
-                <div class="form-floating mb-1 input-control">
-                    <input type="password" class="form-control" id="confirm_password" placeholder="Confirm Password" name="confirm_password" >
-                    <div class="error"></div>
-                    <label for="confirm_password"></label>
-                </div>
-                
-                <button class="w-100 btn btn-lg" type="submit">Sign up</button>
-                <hr class="my-3">
-
-                <a href="/login">
-                    <p class="text-center">Are You Already a User ?<span style="color: red; font-weight: bold;"> Login</span></p>
-                </a>
-                      
-                
-            </form>
+      <form
+        id="registrationForm"
+        class="p-0 p-md-5 border rounded-3 bg-body-tertiary"
+        style="border-radius: 5%; background-color: rgb(239, 238, 238)"
+        method="post"
+        action="/register"
+      >
+        <a href="/home">
+          <img
+            class="mt-1 mb-4"
+            src="/images/myimages/chronocraft logo.png"
+            alt=""
+            style="width: 90%; height: 50%; padding-left: 8%"
+        /></a>
+        <div class="hero-cap text-center">
+          <h2 style="font-size: 3rem">Registration</h2>
         </div>
-    </section>
+        <div class="error-message mt-3 mb-3" id="error-message"></div>
+
+        <div class="form-floating mb-1 input-control">
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            placeholder="Name"
+            name="name"
+          />
+          <div class="error"></div>
+          <label for="username"></label>
+        </div>
+        <div class="form-floating mb-1 input-control">
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            placeholder="Email address"
+            name="email"
+          />
+          <div class="error"></div>
+          <label for="email"></label>
+        </div>
+        <div class="form-floating mb-1 input-control">
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Password"
+            name="password"
+          />
+          <div class="error"></div>
+          <label for="password"></label>
+        </div>
+        <div class="form-floating mb-1 input-control">
+          <input
+            type="password"
+            class="form-control"
+            id="confirm_password"
+            placeholder="Confirm Password"
+            name="confirm_password"
+          />
+          <div class="error"></div>
+          <label for="confirm_password"></label>
+        </div>
+
+        <button class="w-100 btn btn-lg" type="submit">Sign up</button>
+        <hr class="my-3" />
+
+        <a href="/login">
+          <p class="text-center">
+            Are You Already a User ?<span style="color: red; font-weight: bold">
+              Login</span
+            >
+          </p>
+        </a>
+      </form>
+    </div>
+  </section>
 </main>
-
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/myjsscript/userRegValidation.js"></script>
-
-

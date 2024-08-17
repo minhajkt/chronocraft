@@ -1,86 +1,47 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>ChrononCraft</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="/mycss/mylogin.css">
-     
-</head>
-<body>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/mycss/mylogin.css" />
+  </head>
+  <body>
     <div class="container">
-        <form id="form">
-            <img class="mt-1 mb-4" src="/images/myimages/chronocraft logo.png" alt="" style="width: 90%; height: 50%;padding-left: 8%;">
-            <h1>Admin Login</h1>
+      <form id="form">
+        <img
+          class="mt-1 mb-4"
+          src="/images/myimages/chronocraft logo.png"
+          alt=""
+          style="width: 90%; height: 50%; padding-left: 8%"
+        />
+        <h1>Admin Login</h1>
 
-            <p class="text-center" style="color: red;font-size: 1rem;"> <%= locals.successMsg ? successMsg : "" %> </p>
+        <p class="text-center" style="color: red; font-size: 1rem">
+          <%= locals.successMsg ? successMsg : "" %>
+        </p>
 
-            <div class="error-message mt-3" id="error-message"></div>
-            <div class="input-control">
-                <label for="email">Email</label>
-                <input id="email" name="email" type="text">
-                <div class="error"></div>
-            </div>
-            <div class="input-control">
-                <label for="password">Password</label>
-                <input id="password" name="password" type="password">
-                <div class="error"></div>
-            </div>
-            <button type="submit" class="btn btn-primary">Sign in</button>
-        </form>
+        <div class="error-message mt-3" id="error-message"></div>
+        <div class="input-control">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="text" />
+          <div class="error"></div>
+        </div>
+        <div class="input-control">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" />
+          <div class="error"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+      </form>
     </div>
 
-    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
     <script src="/myjsscript/adminvalidation.js"></script>
-    
-</body>
+  </body>
 </html>
-
-
-
-
-   <!-- <script>
-    function validateForm() {
-        const email = $('#email').val().trim();
-        const password = $('#password').val().trim();
-        const errorElement = $('#error-message');
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        errorElement.text('');
-
-        if (!emailRegex.test(email)) {
-            errorElement.text('Please enter a valid email address');
-            return false;
-        }
-
-        if (password.length < 6) {
-            errorElement.text('Password must be at least 6 characters long');
-            return false;
-        }
-
-        return true;
-    }
-
-    $('#form').submit(function(event) {
-        event.preventDefault();
-        if (validateForm()) {
-            $.ajax({
-                type: 'POST',
-                url: '/admin',
-                data: { email: $('#email').val(), password: $('#password').val() },
-                success: function(response) {
-                    if (response.success) {
-                        window.location.href = '/admin/home';
-                    } else {
-                        $('#error-message').text(response.message);
-                    }
-                },
-                error: function() {
-                    $('#error-message').text('An error occurred. Please try again.');
-                }
-            });
-        }
-    });
-    </script> -->
-    

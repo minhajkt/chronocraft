@@ -1,0 +1,383 @@
+
+<%- include('../partials/otherhead') %>
+
+<style>
+    .order-details {
+        font-family: 'Arial', sans-serif;
+    }
+
+    .order-summary {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .order-info {
+        flex: 2;
+        padding: 10px;
+        box-sizing: border-box;
+        margin-right: 20px;
+    }
+
+    .shipping-info {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0px;
+        padding-left: 15px;
+        background-color: #f9f9f9;
+        max-height: 195px;
+        overflow: auto;
+        position: sticky;
+        top: 0;
+    }
+
+    .order-item {
+        display: flex;
+        background-color: #f5f5f5;
+        margin-bottom: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .product-image img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+    }
+
+    .product-info {
+        flex-grow: 1;
+        padding: 0 20px;
+    }
+
+    .product-name {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .status {
+        font-weight: bold;
+    }
+
+    .cancelled-status {
+        color: red !important;
+    }
+
+    .delivered-status {
+        color: green !important;
+    }
+
+    .yet-to-be-delivered-status {
+        color: darkgoldenrod !important;
+    }
+    
+    p {
+        margin: 0 !important
+    }
+</style>
+
+<div class="container-fluid order-details col-lg-10 order-items">
+    <h2>Order Details</h2>
+    <div class="order-summary">
+        <div class="order-info">
+            <p><strong>Order ID:</strong> <%= order._id %></p>
+            <div class="it">
+                <p class="ordered-date"><strong>Ordered On:</strong> <%= new Date(order.createdAt).toDateString() %></p>
+                
+                <% if (order.status === 'Yet to be Delivered') { %>
+                    <p class="delivery-date"><strong>Expected Delivery :</strong><span></span></p>
+                <% } %>
+            </div>
+            
+            <p><strong>Total Price:</strong> ₹ <%= order.totalPrice %></p>
+            <p><strong>Payment Mode:</strong> <%= order.paymentMethod %></p>
+
+            <% if (order.discount > 0) { %>
+                <p><strong>Discount Applied:</strong> ₹ <%= order.discount %></p>
+                <p><strong>Final Price:</strong> ₹ <%= order.priceAfterDiscount %></p>
+            <% } %>
+            <% if (order.status === 'Yet to be Delivered' && order.paymentStatus != 'Pending' || order.status === 'Shipped' && order.paymentStatus != 'Pending') { %>
+                <form action="/cancel-order" method="POST" style="display: inline;">
+                  <input type="hidden" name="orderId" value="<%= order._id %>">
+                  <button type="submit" class="btn btn-danger">Cancel Order</button>
+                </form>
+              <% } else if (order.status === 'Delivered') { %>
+                <form action="/return-order" method="POST" style="display: inline;">
+                  <input type="hidden" name="orderId" value="<%= order._id %>">
+                  <button type="submit" class="btn btn-warning">Return Order</button>
+                </form>
+              <% } else if(order.status == 'Cancelled'){ %>
+                <p style="font-size: 1.2rem; font-weight: bold; color: rgb(233, 1, 1) !important;">Order Cancelled</p>
+              <% } else if(order.status == 'Returned') { %>
+                <p style="font-size: 1.2rem; font-weight: bold; color: rgb(156, 140, 24) !important;">Order Returned</p>
+              <%} %>
+
+              <% if(order.status === 'Delivered' || order.status === 'Returned'){ %>
+                <button id="download-invoice" class="btn btn-primary " style="font-size: small; margin-left: 55%;"><i class="fas fa-file-alt"></i>  Download Invoice</button>
+                <!-- <a href="/download-invoice/<%= order._id %>" class="btn btn-primary">Download Invoice</a> -->
+                <!-- <button class="btn btn-primary" style="display: inline-flex; margin-left: 60%;">Download</button> -->
+                <% } %>
+              
+            
+            <% if (order.items.length === 0) { %>
+                <p>No items found in this order.</p>
+            <% } %>
+            <% order.items.forEach(item => { %>
+                <div class="order-item mt-5">
+                    <div class="product-image">
+                        <img src="<%= item.product.images[0] %>" alt="<%= item.product.name %>">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name"><%= item.product.name %></h3>
+                        <p>Quantity: <%= item.quantity %></p>
+                        <p>Price: ₹ <%= item.product.price %></p>
+                        <p class="status <%= order.status.toLowerCase().replace(' ', '-') %>-status">
+                            Status : <%= order.status %>
+                        </p>
+                    </div>
+                    
+                    <!-- <% if (item.status === 'Yet to be Delivered') { %>
+                        <form action="/cancel-item" class="item-action-form" method="POST" style="display: inline;">
+                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                            <input type="hidden" name="productId" value="<%= item.product._id %>">
+                            <input type="hidden" name="quantity" value="<%= item.quantity %>">
+                            <button type="submit" class="btn btn-danger cancel-item-btn" style="margin-top: 1.5rem;">Cancel Item</button>
+                        </form>
+                    <% } else if (item.status === 'Delivered') { %>
+                        <form action="/return-item" class="item-action-form" method="POST" style="display: inline;">
+                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                            <input type="hidden" name="productId" value="<%= item.product._id %>">
+                            <input type="hidden" name="quantity" value="<%= item.quantity %>">
+                            <button type="submit" class="btn btn-warning return-item-btn" style="margin-top: 1.5rem;">Return Item</button>
+                        </form>
+                    <% } else { %>
+                        <p style="margin-top: 1.5rem; font-size: 1.2rem; width: 10rem; height: 2rem; font-weight: bold; color: rgb(233, 1, 1) !important;">Item Cancelled</p>
+                    <% } %> -->
+                </div>
+            <% }) %>
+            <!-- <% if (order.coupon) { %>
+                <div class="coupon-info">
+                    <p><strong>Coupon Code:</strong> <%= order.coupon.code %></p>
+                    <p><strong>Coupon Discount:</strong> <%= order.coupon.discountValue %> <%= order.coupon.discountType === 'percentage' ? '%' : '₹' %></p>
+                </div>
+            <% } %> -->
+        </div>
+
+        <div class="shipping-info">
+            <h3>Shipping Address</h3>
+            <p><strong>Name:</strong> <%= user.name %></p>
+            <p><strong>Street:</strong> <%= order.address.street %></p>
+            <p><strong>City:</strong> <%= order.address.city %></p>
+            <p><strong>State:</strong> <%= order.address.state %></p>
+            <p><strong>Pincode:</strong> <%= order.address.pincode %></p>
+        </div>
+    </div>
+</div>
+
+
+<div id="invoice-content" style="max-width: 800px; margin: 0 auto; padding: 20px; display: none;">
+
+    <img src="/images/logo/logo.png" alt="" style="display: block; margin: 0 auto; width: 18rem;">
+    <br>
+    <h1 style="text-align: center;">Invoice</h1><hr>
+
+    <div style="display: flex; justify-content: space-between;">
+        <div style="width: 50%;">
+            <h4>Order Details</h4><hr>
+            <p><strong>Order ID:</strong> <%= order._id %></p>
+            <div class="it">
+            <p class="ordered-date"><strong>Ordered On:</strong> <%= new Date(order.createdAt).toDateString() %></p>
+            <p class="ordered-date"><strong>Invoice Date:</strong> <%= new Date(order.createdAt).toDateString() %></p>
+            <p><% if (order.status === 'Yet to be Delivered') { %>
+                    <p class="delivery-date"><strong>Expected Delivery :</strong><span></span></p>
+                <% } else if (order.status === 'Delivered'){ %>
+            <p style="color: green;"><strong>Delivered</strong></p>
+                    <% }else if (order.status === 'Returned') { %>
+                        <p style="color: rgb(165, 154, 35);"><strong>Returned</strong></p>
+                        <%}%></p>
+            </div>
+            <p><strong>Payment Mode:</strong> <%= order.paymentMethod %></p>
+            
+        </div>
+
+        <div style="width: 50%; text-align: right;">
+            <h4>Shipping Address</h4><hr>
+            <p>Name: <%= user.name %></p>
+            <p>Street: <%= order.address.street %></p>
+            <p>City: <%= order.address.city %></p>
+            <p>State: <%= order.address.state %></p>
+            <p>Pincode: <%= order.address.pincode %></p>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Items</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="text-align: left;">Item Name</th>
+                <th style="text-align: center;">Quantity</th>
+                <th style="text-align: right;">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% order.items.forEach(function(item) { %>
+                <tr>
+                    <td><%= item.product.name %></td>
+                    <td style="text-align: center;"><%= item.quantity %></td>
+                    <td style="text-align: right;">₹ <%= (item.product.price * item.quantity).toFixed(2) %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <hr>
+    <% if (order.discount > 0) { %>
+        <p style="text-align: right;"><strong>Discount:</strong> ₹ <%= order.discount.toFixed(2) %></p>
+    <% } %>
+    <p style="text-align: right;"><strong>Total: ₹ <%= order.priceAfterDiscount.toFixed(2) %></strong></p>
+</div>
+
+
+
+
+
+
+
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Confirm Cancel</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to cancel the order?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="cancel-order">Cancel Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Confirm Return</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to return the order?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="return-order">Return Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+
+
+<script>
+    document.getElementById('download-invoice').addEventListener('click', function() {
+        const element = document.querySelector("#invoice-content");
+
+        element.style.display = 'block';
+
+        html2pdf().from(element).save('invoice.pdf').then(function() {
+            element.style.display = 'none';
+        });
+        });
+
+</script>
+
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let formToSubmit;
+  
+      document.body.addEventListener('click', function(event) {
+        if (event.target.classList.contains('btn-danger')) {
+          event.preventDefault();
+          formToSubmit = event.target.closest('form'); 
+          $('#confirmModal').modal('show');
+        }
+      });
+  
+      document.getElementById('cancel-order').addEventListener('click', function() {
+        $('#confirmModal').modal('hide');
+        if (formToSubmit) {
+          formToSubmit.submit();
+        }
+      });
+    });
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      let formToSubmit;
+  
+      document.body.addEventListener('click', function(event) {
+        if (event.target.classList.contains('btn-warning')) {
+          event.preventDefault();
+          formToSubmit = event.target.closest('form'); 
+          $('#returnModal').modal('show');
+        }
+      });
+  
+      document.getElementById('return-order').addEventListener('click', function() {
+        $('#returnModal').modal('hide');
+        if (formToSubmit) {
+          formToSubmit.submit();
+        }
+      });
+    });
+  
+    document.addEventListener('DOMContentLoaded', function() {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    // Select all elements with the class `delivery-date`
+    document.querySelectorAll('.it').forEach(orderItem => {
+        const orderDateText = orderItem.querySelector('.ordered-date').textContent;
+        const orderDate = new Date(orderDateText.replace('Ordered On:', '').trim());
+        
+        // Check if the order status is 'Yet to be Delivered'
+        if (orderItem.querySelector('.delivery-date')) {
+            const deliveryDate = new Date(orderDate);
+            deliveryDate.setDate(orderDate.getDate() + 3); // Set expected delivery as 3 days later
+        
+            const expectedDay = days[deliveryDate.getDay()];
+            orderItem.querySelector('.delivery-date span').textContent = `${expectedDay}, ${deliveryDate.toDateString()}`;
+        }
+    });
+});
+
+  
+    setTimeout(() => {
+      const flashMessages = document.querySelectorAll('.flash-message')
+      flashMessages.forEach(message => {
+        message.remove()
+      })
+    }, 5000);
+  </script>
+
+
+<%- include('../partials/proddetailsfoot') %>
+
+
+
+

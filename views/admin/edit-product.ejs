@@ -1,5 +1,6 @@
 <%- include('../partials/adminheader') %>
 <link rel="stylesheet" href="/mycss/userreg.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
 <div class="container d-flex justify-content-center align-items-center">
     <form id="form" action="/admin/products/edit-product" method="POST" enctype="multipart/form-data" style="width: 50%; background-color: #76ac93; border: 2px solid grey;">
@@ -41,7 +42,23 @@
                 <div class="error-message"  style="text-align: left;color: red !important"></div>
             </div>
         </div>
-
+        <div class="mb-3 row">
+            <label for="quantity" class="col-sm-3 col-form-label">Discount %</label>
+            <div class="col-sm-8">
+                <input type="number" class="form-control" id="offerDiscount" name="offerDiscount" max="100" step="0.01" value="<%= product.offer ? product.offer.offerDiscount : 0 %>">
+                <span id="discountError" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label for="quantity" class="col-sm-3 col-form-label">Activate Offer</label>
+            <div class="col-sm-8">
+                <select class="form-control" id="active" name="active">
+                    <option value="true" <%= product.offer.active ? 'selected' : '' %>>Yes</option>
+            <option value="false" <%= !product.offer.active ? 'selected' : '' %>>No</option>
+                </select>
+                <!-- <span id="discountError" class="text-danger"></span> -->
+            </div>
+        </div>
         <div class="mb-3 row">
             <label for="category" class="col-sm-3 col-form-label">Category</label>
             <div class="col-sm-8">
@@ -83,102 +100,44 @@
 </div> 
 
         <div class="container d-flex">
-            <button type="submit" style="background-color: rgb(17, 161, 17); margin-left: 20%; margin-bottom: 5%; width: 7rem;">Update Product</button>
+            <button type="submit" onclick="showToast()" style="background-color: rgb(17, 161, 17); margin-left: 20%; margin-bottom: 5%; width: 7rem;">Update Product</button>
         </div>
+
+        
     </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+
+
 <script src="/myjsscript/productaddValidation.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form'); 
+        const discountInput = document.getElementById('offerDiscount');
+        const errorSpan = document.getElementById('discountError');
+
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+            errorSpan.textContent = ''; 
+
+            const value = parseFloat(discountInput.value);
+            
+            if (isNaN(value) || value < 0) {
+                errorSpan.textContent = 'Please enter the discount amount.';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
 
 
 
 <%- include('../partials/adminfooter') %>
 
 
-
-<!-- 
-
-<link rel="stylesheet" href="/mycss/userreg.css">
-
-<div class="container d-flex justify-content-center align-items-center">
-    <form id="form" action="/admin/products/edit-product" method="POST" enctype="multipart/form-data" style="width: 50%; background-color: #76ac93; border: 2px solid grey;">
-        <h1 class="text text-center pt-2" style="font-weight: bold;">Edit Product</h1><br>
-
-        <input type="hidden" name="_id" value="<%= product._id %>">
-        <div class="error-message mt-3" id="error-message"></div>
-        
-        <div class="mb-3 row">
-            
-            <label for="name" class="col-sm-3 col-form-label">Name</label>
-            <div class="col-sm-8">
-                <div class="error-message" style="text-align: start;"></div>
-                <input style="color: black !important;" type="text" class="form-control" id="name" name="name" value="<%= product.name %>">
-                
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="description" class="col-sm-3 col-form-label">Description</label>
-            <div class="col-sm-8">
-                <div class="error-message" style="text-align: start;"></div>
-                <textarea style="color: black !important;" class="form-control" id="description" rows="5" name="description"><%= product.description %></textarea>
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="price" class="col-sm-3 col-form-label">Price</label>
-            <div class="col-sm-8">
-                <div class="error-message"style="text-align: start;"></div> 
-                <input style="color: black !important;" type="number" class="form-control" id="price" name="price" value="<%= product.price %>" >
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="category" class="col-sm-3 col-form-label">Category</label>
-            <div class="col-sm-8">
-                <select name="category" class="form-control" id="category">
-                    <% categories.forEach(category => { %>
-                        <option style="color: black !important;" value="<%= category._id %>" <%= product.categories.includes(category._id) ? 'selected' : '' %>><%= category.name %></option>
-                    <% }) %>
-                </select>
-                <div class="error-message"></div> 
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="quantity" class="col-sm-3 col-form-label">Quantity</label>
-            <div class="col-sm-8">
-                <div class="error-message"style="text-align: start;"></div> 
-                <input style="color: black !important;" type="number" class="form-control" id="quantity" name="quantity" value="<%= product.quantity %>" >
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="images" class="col-sm-3 col-form-label">Images</label>
-            <div class="col-sm-8">
-                <ul class="image-list" style="list-style-type: none; padding: 0; margin: 0;">
-                    <% product.images.forEach(image => { %>
-                        <li class="image-item" style="display: inline-block; position: relative; margin-right: 15px;">
-                            <div class="image-container" style="position: relative;">
-                                <img src="<%= image %>" alt="Product Image" style="max-width: 90px; margin-bottom: 20px;">
-                                <a href="/admin/products/delete-image?productId=<%= product._id %>&image=<%= image %>" class="btn-delete" style="position: absolute; top: 0px; right: 0px; color: white; border: none; border-radius: 50%; padding: 0px; cursor: pointer;">
-                                    <i class="material-icons">&#xe872;</i>
-                                </a>
-                            </div>
-                        </li>
-                    <% }) %>
-                </ul>
-                <div class="error-message"></div> 
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <label for="images" class="col-sm-3 col-form-label">Add new Images</label>
-            <div class="col-sm-8">
-                <input type="file" class="form-control" id="images" name="images" multiple>
-                <div class="error-message"></div> 
-            </div>
-        </div>
-        <div class="container d-flex">
-            <button type="submit" style="background-color: rgb(17, 161, 17); margin-left: 20%; margin-bottom: 5%; width: 7rem;">Edit Product</button>
-        </div>
-    </form>
-</div>
-
-<script src="/myjsscript/productaddValidation.js"></script>
-
- -->

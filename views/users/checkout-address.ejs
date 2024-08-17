@@ -1,0 +1,276 @@
+<%- include('../partials/otherhead') %>
+
+<style>
+    .name-type-edit-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    body.modal-open {
+        padding-right: 0 !important;
+        
+        }
+</style>
+
+<% if(success.length >0){ %>
+    <div
+        class="flash-message" id="flash-success"> <%= success %>
+    </div>
+    <% } %>
+    <% if (error.length > 0) { %>
+        <div class="flash-message" id="flash-error"><%= error %></div>
+      <% } %>
+
+      <div id="notification-container" style="position: fixed; top: 10px; right: 10px; z-index: 9999;"></div>
+
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <div class="col-lg-8 mb-5">
+            <h3 class="delivery-title" style="font-weight: 600 !important;font-family:Josefin Sans, sans-serif;">Delivery Address</h2>
+            <% if (user && user.addresses.length > 0) { %>
+                <form id="address-form">
+                    <div class="address-list">
+                        <% user.addresses.forEach((address, index) => { %>
+                            <div class="address-item">
+                                <input type="radio" name="addressId" value="<%= address._id %>" id="address-<%= address._id %>" <%= index === 0 ? 'checked' : '' %>>
+                                <label for="address-<%= address._id %>">
+                                    <div class="name-type-edit-container">
+                                    <div class="name-type">
+                                        <span class="name"><%= user.name %></span>
+                                        <span class="type"><%= address.type || 'HOME' %></span>
+                                    </div>
+                                    <button class="btn edit-btn" style="background-color: white;padding: 0;color: blue;right: 4%;border: 0;" data-toggle="modal" data-target="#editAddressModal" data-id="<%= address._id %>" data-street="<%= address.street %>" data-city="<%= address.city %>" data-state="<%= address.state %>" data-pincode="<%= address.pincode %>"><i class="fas fa-pencil-alt"></i></button>
+                                    </div>
+
+                                    <div class="phone"><%= user.mobile %></div>
+                                    <div class="address-details">
+                                        <%= address.street %>, <%= address.city %>, <%= address.state %> - <%= address.pincode %>
+                                    </div>
+                                    <button type="submit" class="deliver-btn">DELIVER HERE</button>
+                                </label>
+
+                                <!-- <a href="/edit-address/<%= address._id %>" class="edit-link">EDIT</a> -->
+                            </div>
+                        <% }) %>
+                    </div>
+                </form>
+            <% } else { %>
+                <p>You have no saved addresses. Please add an address to proceed.</p>
+            <% } %>
+            
+            <div class="card">
+                <div class="card-body bg-secondary border-0">
+                    <button class="btn btn-primary custom-button" data-toggle="modal" data-target="#addAddressModal" style="text-transform: none;"><i class="fa fa-plus-circle mr-2"></i>Add a new address</button>
+                    <!-- <a href="/profile" class="add-address-link text-dark">
+                        <i class="fa fa-plus-circle mr-2"></i>Add a new address
+                    </a> -->
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addAddressForm" action="/add-address" method="POST">
+                            
+                            <div class="form-group">
+                                <label for="street">Street</label>
+                                <input type="text" class="form-control" id="street" name="street">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" id="state" name="state">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="pincode">Pin Code</label>
+                                <input type="text" class="form-control" id="pincode" name="pincode">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Address</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+        
+                        
+                        <form id="editAddressForm" action="/edit-address/:addressId" method="POST">
+                  
+                            <input type="hidden" id="editAddressId" name="addressId" >
+        
+                            <div class="form-group">
+                                <label for="editStreet">Street</label>
+                                <input type="text" class="form-control" id="editStreet" name="street">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCity">City</label>
+                                <input type="text" class="form-control" id="editCity" name="city">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editState">State</label>
+                                <input type="text" class="form-control" id="editState" name="state">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editPincode">Pin Code</label>
+                                <input type="text" class="form-control" id="editPincode" name="pincode">
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Address</button>
+              
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        
+        <div class="col-lg-4 mb-5">
+            <div class="card border-secondary mb-5">
+                <div class="card-header bg-secondary border-0">
+                    <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3 pt-1">
+                        <h6 class="font-weight-medium">Subtotal</h6>
+                        <% if(cart){ %>
+                        <h6 class="font-weight-medium"> <%= cart.totalPrice %> </h6>
+                        <% } %>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <h6 class="font-weight-medium">Discount</h6>
+                        <% if(cart.coupon){ %>
+                            <h6 class="font-weight-medium" id="cartDiscount"> <%= discount %> </h6>
+                        <% } else {%>
+                            <h6 class="font-weight-medium" id="cartDiscount"> 0 </h6>
+                            <% } %>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <h6 class="font-weight-medium">Shipping</h6>
+                        <h6 class="font-weight-medium"> Free </h6>
+                    </div>
+                </div>
+                <div class="card-footer border-secondary bg-transparent">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5 class="font-weight-bold">Total</h5>
+                        <h5 class="font-weight-bold" id="cartTotal"> <%= finalPrice || cart.totalPrice %> </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    document.getElementById('address-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch('/checkout-address', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                addressId: formData.get('addressId')
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/payment';
+            } else {
+                showNotification('Failed to select address: ' + (data.message || 'Unknown Error'), 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred. Please try again.', 'danger');
+        });
+    });
+
+    function showNotification(message, type) {
+        var notificationContainer = document.getElementById('notification-container');
+        var notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible`;
+        notification.role = 'alert';
+        notification.innerHTML = `<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>${message}`;
+        notificationContainer.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('fade');
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+</script>
+
+<script>
+    function showNotification(message, type) {
+        var notificationContainer = $('#notification-container');
+        var notification = $('<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + 
+                             '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + 
+                             '<span aria-hidden="true"></span></button>' + message + '</div>');
+        notificationContainer.append(notification);
+        
+
+        setTimeout(function() {
+            notification.alert('close');
+        }, 3000);
+    }
+</script>
+
+<script>
+setTimeout(()=>{
+    const flashMessages = document.querySelectorAll('.flash-message')
+    flashMessages.forEach(message=>{
+            message.remove()
+        })
+},5000)
+</script>
+
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+
+<script src="/myjsscript/manageAddressCheckout.js"></script>
+
+
+<%- include('../partials/proddetailsfoot') %>

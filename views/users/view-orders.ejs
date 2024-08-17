@@ -1,0 +1,510 @@
+<%- include('../partials/otherhead') %>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<style>
+  .order-history {
+    font-family: "Arial", sans-serif;
+  }
+
+  .order-item {
+    background-color: #f5f5f5;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .order-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .product-image img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+
+  .product-info {
+    flex-grow: 1;
+    padding: 0 20px;
+  }
+
+  .product-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .order-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .delivered {
+    color: #28a745;
+  }
+
+  .cancelled {
+    color: #dc3545;
+  }
+
+  .btn-review {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  p {
+    margin-bottom: 0 !important;
+    color: black !important;
+  }
+
+  .product-image {
+    display: flex;
+    align-items: center;
+  }
+
+  body.modal-open {
+    overflow: hidden;
+    padding-right: 0 !important;
+  }
+
+  .status {
+    font-weight: bold;
+  }
+
+  .cancelled-status {
+    color: red !important;
+  }
+
+  .delivered-status {
+    color: green !important;
+  }
+
+  .yet-to-be-delivered-status {
+    color: darkgoldenrod !important;
+  }
+</style>
+
+<% if (success.length > 0) { %>
+<div class="flash-message" id="flash-success"><%= success %></div>
+<% } %> <% if (error.length > 0) { %>
+<div class="flash-message" id="flash-error"><%= error %></div>
+<% } %>
+
+<div class="container-fluid order-history col-lg-10">
+  <% if (orders.length === 0) { %>
+  <div class="justify-content-center align-items-center">
+    <div class="col-6 text-center">
+      <img
+        src="/images/myimages/empty.png"
+        alt="Empty Cart"
+        style="margin-left: 78%; width: 50%; height: 50%"
+      />
+    </div>
+    <p style="margin-left: 46%; color: black">No orders Found</p>
+    <div class="col-6 text-center">
+      <a href="/shop" class="btn btn-primary" style="margin-left: 94%"
+        >Shop Now</a
+      >
+    </div>
+  </div>
+  <% } %> <% orders.forEach(order => { %>
+  <div class="order-item">
+    <div class="order-details">
+      <div>
+        <p class="order-id" style="font-size: small"># <%= order._id %></p>
+        <h3>Order Summary</h3>
+
+        <p>Ordered On: <%= order.createdAt.toDateString() %></p>
+        <% if(order.paymentStatus === 'Pending'){ %>
+        <p>Status: <span style="color: red; font-weight: 900">Pending</span></p>
+
+        <form
+          id="payment-form-<%= order._id%>"
+          action="/retry-payment"
+          method="POST"
+        >
+          <input
+            type="hidden"
+            name="address[street]"
+            value="<%= order.address.street %>"
+          />
+          <input
+            type="hidden"
+            name="address[city]"
+            value="<%= order.address.city %>"
+          />
+          <input
+            type="hidden"
+            name="address[state]"
+            value="<%= order.address.state %>"
+          />
+          <input
+            type="hidden"
+            name="address[pincode]"
+            value="<%= order.address.pincode %>"
+          />
+          <input type="hidden" name="orderId" value="<%= order._id %>" />
+          <input
+            type="hidden"
+            name="amount"
+            value="<%= order.priceAfterDiscount%>"
+          />
+          <% if(order.status != 'Cancelled') { %>
+          <button
+            type="submit"
+            id="retry-payment"
+            class="btn btn-sm"
+            style="background-color: #dc3545; color: black"
+          >
+            Retry Payment
+          </button>
+          <%} %>
+        </form>
+
+        <% }else{ %>
+        <p>
+          Status:
+          <span
+            class="status <%= order.status.toLowerCase().replace(' ', '-') %>-status"
+            ><%= order.status %></span
+          >
+        </p>
+        <% } %>
+      </div>
+      <div>
+        <a href="/view-order-details/<%= order._id %>" class="btn btn-info"
+          >View Details</a
+        >
+        <% if (order.status === 'Yet to be Delivered' && order.paymentStatus !=
+        'Pending' || order.status === 'Shipped' && order.paymentStatus !=
+        'Pending') { %>
+        <form action="/cancel-order" method="POST" style="display: inline">
+          <input type="hidden" name="orderId" value="<%= order._id %>" />
+          <button type="submit" class="btn btn-danger">Cancel Order</button>
+        </form>
+        <% } else if (order.status === 'Delivered') { %>
+        <form action="/return-order" method="POST" style="display: inline">
+          <input type="hidden" name="orderId" value="<%= order._id %>" />
+          <button type="submit" class="btn btn-warning">Return Order</button>
+        </form>
+        <% } else if(order.status == 'Cancelled'){ %>
+        <p
+          style="
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: rgb(233, 1, 1) !important;
+          "
+        >
+          Order Cancelled
+        </p>
+        <% } else if(order.status == 'Returned') { %>
+        <p
+          style="
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: rgb(156, 140, 24) !important;
+          "
+        >
+          Order Returned
+        </p>
+        <%} %>
+      </div>
+    </div>
+
+    <% order.items.forEach(item => { %>
+    <div class="order-item">
+      <div class="product-image">
+        <img
+          src="<%= item.product.images[0] %>"
+          alt=""
+          style="width: 80px; height: 80px"
+        />
+      </div>
+      <div class="product-info">
+        <p class="product-name">Name: <%= item.product.name %></p>
+        <p class="product-quantity">Quantity: <%= item.quantity %></p>
+        <p class="product-price">Price: ₹ <%= item.product.price %></p>
+      </div>
+      <div class="order-status"></div>
+    </div>
+    <% }) %>
+  </div>
+  <% }) %>
+</div>
+
+<div
+  class="modal fade"
+  id="confirmModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="confirmModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirm Cancel</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">Are you sure you want to cancel the order?</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="cancel-order">
+          Cancel Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="returnModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="confirmModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirm Return</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">Are you sure you want to return the order?</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="return-order">
+          Return Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const paymentForms = document.querySelectorAll('form[id^="payment-form-"]');
+
+    paymentForms.forEach((form) => {
+      const retryButton = form.querySelector('button[type="submit"]');
+
+      if (retryButton) {
+        retryButton.addEventListener("click", function (event) {
+          event.preventDefault();
+          handleRetryPayment(form);
+        });
+      }
+    });
+
+    function handleRetryPayment(form) {
+      const formData = new FormData(form);
+      const data = {
+        address: {
+          street: formData.get("address[street]"),
+          city: formData.get("address[city]"),
+          state: formData.get("address[state]"),
+          pincode: formData.get("address[pincode]"),
+        },
+        payment: "online",
+        orderId: formData.get("orderId"),
+        amount: formData.get("amount"),
+      };
+      console.log("Address data is", data);
+
+      fetch("/retry-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Response data from /retry-payment:", data);
+          if (data.success) {
+            const options = {
+              key: "rzp_test_VApTinR8991MNk",
+              amount: data.amount,
+              currency: data.currency,
+              name: "ChronoCraft",
+              description: "Retry Payment",
+              order_id: data.order_id,
+              handler: function (response) {
+                console.log("Payment response:", response);
+                console.log("Address in handler:", data.address);
+                confirmOrderOnline(response, data.address);
+              },
+              modal: {
+                ondismiss: function () {
+                  console.log("Payment modal dismissed.");
+                  console.log("Address in ondismiss:", data.address);
+                  confirmOrderOnline(
+                    {
+                      razorpay_order_id: data.order_id,
+                      razorpay_payment_id: "",
+                      razorpay_signature: "",
+                    },
+                    data.address
+                  );
+                },
+              },
+              prefill: {
+                name: formData.get("name"),
+                email: formData.get("email"),
+                contact: formData.get("mobile"),
+              },
+              theme: {
+                color: "#3399cc",
+              },
+            };
+            console.log("Razorpay options:", options);
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+          } else {
+            alert("Failed to create Razorpay retry order: " + data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    function confirmOrderOnline(paymentDetails, address) {
+      const data = {
+        address: address,
+        razorpay_order_id: paymentDetails.razorpay_order_id,
+        razorpay_payment_id: paymentDetails.razorpay_payment_id,
+        razorpay_signature: paymentDetails.razorpay_signature,
+      };
+
+      fetch("/confirm-retry-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            if (data.success) {
+              window.location.href = "/payment-success";
+            } else {
+              alert(data.message);
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let formToSubmit;
+
+    document.body.addEventListener("click", function (event) {
+      if (event.target.classList.contains("btn-danger")) {
+        event.preventDefault();
+        formToSubmit = event.target.closest("form");
+        $("#confirmModal").modal("show");
+      }
+    });
+
+    document
+      .getElementById("cancel-order")
+      .addEventListener("click", function () {
+        $("#confirmModal").modal("hide");
+        if (formToSubmit) {
+          formToSubmit.submit();
+        }
+      });
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    let formToSubmit;
+
+    document.body.addEventListener("click", function (event) {
+      if (event.target.classList.contains("btn-warning")) {
+        event.preventDefault();
+        formToSubmit = event.target.closest("form");
+        $("#returnModal").modal("show");
+      }
+    });
+
+    document
+      .getElementById("return-order")
+      .addEventListener("click", function () {
+        $("#returnModal").modal("hide");
+        if (formToSubmit) {
+          formToSubmit.submit();
+        }
+      });
+  });
+
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  document.querySelectorAll(".delivery-date span").forEach((element) => {
+    const orderDate = new Date(
+      element
+        .closest(".order-item")
+        .querySelector(".ordered-date")
+        .textContent.replace("Ordered On : ", "")
+    );
+    orderDate.setDate(orderDate.getDate() + 3);
+    const expectedDay = days[orderDate.getDay()];
+    element.textContent = `${expectedDay}, ${orderDate.toDateString()}`;
+  });
+
+  setTimeout(() => {
+    const flashMessages = document.querySelectorAll(".flash-message");
+    flashMessages.forEach((message) => {
+      message.remove();
+    });
+  }, 5000);
+</script>
+
+<%- include('../partials/proddetailsfoot') %>

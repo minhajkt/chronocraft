@@ -1,0 +1,42 @@
+<%- include('../partials/otherhead') %>
+
+<div class="container col-6 text-center">
+  <img
+    src="/images/myimages/order2.gif"
+    alt="Empty Cart"
+    style="width: 50%; height: 50%"
+  />
+  <p style="color: black; font-weight: bold">
+    Your Order is Placed Successfully
+  </p>
+  <div class="buttons">
+    <button
+      onclick="location.href='/shop'"
+      style="background-color: darkblue; width: 12rem; height: 3rem"
+    >
+      Continue Shopping
+    </button>
+    <button
+      onclick="location.href='/view-orders'"
+      style="background-color: darkblue; width: 12rem; height: 3rem"
+    >
+      View Orders
+    </button>
+  </div>
+</div>
+
+<!-- 
+<h4>Order Details</h4>
+<h3>Billing</h3>
+<p>order ID : <%= order._id %> </p><br>
+<p>state : <%= order.address.state %> </p><br>
+
+<h3>items</h3>
+<% order.items.forEach(item => { %>
+<p>name <%= item.product.name %> </p>
+<p>quantity <%= item.quantity %> </p>
+
+<% }) %>
+<p>totalPrice <%= order.totalPrice %> </p> -->
+
+<%- include('../partials/proddetailsfoot') %>

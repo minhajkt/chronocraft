@@ -1,0 +1,202 @@
+<%- include('../partials/otherhead') %>
+
+
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background-color: #f5f5f5;
+    }
+    .header {
+        /* background-color: #97979a; */
+        color: white;
+        text-align: center;
+        padding: 2rem 0;
+    }
+    .header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 600;
+    }
+    .breadcrumb {
+        display: flex;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+    .breadcrumb a {
+        color: #080808;
+        text-decoration: none;
+    }
+    .wishlist-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    .wishlist-table {
+        width: 100%;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .wishlist-table th, .wishlist-table td {
+        padding: 1rem;
+        text-align: left;
+    }
+    .wishlist-table th {
+        background-color: #f0f0f0;
+        font-weight: 600;
+    }
+    .wishlist-table img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .product-info {
+        display: flex;
+        align-items: center;
+    }
+    .product-name {
+        margin-left: 1rem;
+        font-size: 1rem;
+    }
+    .product-price {
+        font-size: 1.2rem;
+        color: #e53935;
+        font-weight: 600;
+    }
+    .remove-from-wishlist {
+        background: none;
+        border: none;
+        color: #9e9e9e;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+    .remove-from-wishlist:hover {
+        color: #e53935;
+    }
+    .empty-wishlist {
+        text-align: center;
+        padding: 2rem;
+        font-size: 1.2rem;
+        color: #757575;
+    }
+    @media (max-width: 768px) {
+        .wishlist-table th:nth-child(3), .wishlist-table td:nth-child(3) {
+            display: none;
+        }
+    }
+</style>
+</head>
+<body>
+<header class="header">
+    <h1>My Wishlist (<%= wishlistProducts.length %>)</h1>
+    <div class="breadcrumb">
+        <a href="/home">Home</a>
+        <span class="mx-2">-</span>
+        <span style="color: red !important;">Wishlist</span>
+    </div>
+</header>
+<div id="notification-container" style="position: fixed; top: 10px; right: 10px; z-index: 9999;"></div>
+<main class="wishlist-container">
+    <% if (wishlistProducts.length > 0) { %>
+        <table class="wishlist-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% wishlistProducts.forEach(product => { %>
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                <a href="/product/<%= product._id %>" style="text-decoration: none;">
+                                <img src="<%= product.images[0] %>" alt="<%= product.name %>">
+                                <span class="product-name"><%= product.name %></span>
+                                </a>
+                            </div>
+                        </td>
+                        <td class="product-price">₹<%= product.price %></td>
+                        <td>
+                            <button class="remove-from-wishlist" data-product-id="<%= product._id %>">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <div class="empty-wishlist">
+            <p>Your wishlist is empty. Start adding some products!</p>
+        </div>
+    <% } %>
+</main>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.remove-from-wishlist').forEach(button => {
+            button.addEventListener('click', async function() {
+                const productId = this.getAttribute('data-product-id');
+                try {
+                    const response = await fetch('/remove-from-wishlist', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({ productId })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showNotification('Product Removed from wishlist!');
+                        window.location.reload(); 
+                    } else {
+                        alert('Failed to remove from wishlist: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing from wishlist.');
+                }
+            });
+        });
+    });
+
+    function showNotification(message, type) {
+            var notificationContainer = $('#notification-container');
+            var notification = $('<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + 
+                                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + 
+                                 '<span aria-hidden="true"></span></button>' + message + '</div>');
+            notificationContainer.append(notification);
+            
+
+            setTimeout(function() {
+                notification.fadeOut(500, function() {
+                    $(this).remove();
+                });
+            }, 3000);
+        }
+</script>
+
+
+<%- include('../partials/proddetailsfoot') %>
+
+
+
+
+
+
+
+
+
+    
+
+    
+

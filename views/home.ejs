@@ -3,6 +3,17 @@
 <%- include('./partials/shophead')  %> 
 
 
+
+    <% if(success.length >0){ %>
+        <div
+            class="flash-message justify-content-center" id="flash-success" style="width: 15%;text-align: center;"> <%= success %>
+        </div>
+        <% } %>
+        <% if (error.length > 0) { %>
+            <div class="flash-message" id="flash-error"><%= error %></div>
+          <% } %>
+          <div id="notification-container" style="position: fixed; top: 10px; right: 10px; z-index: 9999;"></div>
+
     <main>
         <!--? slider Area Start -->
         <div class="slider-area ">
@@ -29,47 +40,37 @@
                         </div>
                     </div>
                 </div>
-                
-        <!-- slider Area End-->
- 
-        <!--  New Product End -->
-        <!--? Gallery Area Start -->
-        <!-- <div class="gallery-area">
-            <div class="container-fluid p-0 fix">
-                <div class="row">
-                    <div class="col-xl-6 col-lg-4 col-md-6 col-sm-6">
-                        <div class="single-gallery mb-30">
-                            <div class="gallery-img big-img" style="background-image: url(images/gallery/gallery1.png);"></div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                        <div class="single-gallery mb-30">
-                            <div class="gallery-img big-img" style="background-image: url(images/gallery/gallery2.png);"></div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12">
-                        <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-6 col-sm-6">
-                                <div class="single-gallery mb-30">
-                                    <div class="gallery-img small-img" style="background-image: url(images/gallery/gallery3.png);"></div>
-                                </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12  col-md-6 col-sm-6">
-                                <div class="single-gallery mb-30">
-                                    <div class="gallery-img small-img" style="background-image: url(images/gallery/gallery4.png);"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
+
+
+
+
+
+
+
+                
+                <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="profileModalLabel">User Profile</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="profileContent">
+                                <!-- Profile content will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div> -->
+
+
         <div class="container-fluid pt-5" style="padding-left: 5%;">
             <div class="text-center mb-4">
                 <h2 class="section-title px-5"><span class="px-2">Our Products</span></h2>
             </div>
-            <div class="row">
+            <div class="row" id="product-list">
                 <% products.forEach(product => { %>
                     <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                         <div class="card product-item border-0 mb-4" style="width: 300px;height: 460px;">
@@ -79,23 +80,44 @@
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3"><%= product.name %></h6>
                                 <div class="d-flex justify-content-center">
-                                    <h6>₹ <%= product.price %></h6>
-                                    
+                                            <% 
+                                                const actualPrice = product.actualPrice || 0;
+                                                const discountedPrice = product.discountedPrice || actualPrice;
+                                            %>
+                                            <% if (discountedPrice < actualPrice) { %>
+                                                <h6 class="text-danger">₹ <%= discountedPrice.toFixed(2) %></h6>
+                                                <h6 class="text-muted ml-2"><del>₹ <%= actualPrice.toFixed(2) %></del></h6>
+                                            <% } else { %>
+                                                <h6>₹ <%= actualPrice.toFixed(2) %></h6>
+                                            <% } %>
                                 </div>
                             </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
+                            <div class="card-footer d-flex justify-content-between bg-light border" style="padding-left: 0;padding-right: 0;">
                                 <a href="/product/<%= product._id %>" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <a href="#" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                <% if (product.quantity > 0) { %>
+                                    <a href="/add-to-cart" class="btn btn-sm text-dark p-0 add-to-cart" data-product-id="<%= product._id %>"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                    <% } else { %>
+                                        <button class="btn btn-sm text-muted p-0" disabled><i class="fas fa-shopping-cart text-primary mr-1"></i>Out of Stock</button>
+                                    <% } %>
+                                    
+                                    <% if(user) {%>
+                                    <% if (wishlistProducts.includes(product._id.toString())) { %>
+                                        <button class="btn btn-sm text-danger p-0 remove-from-wishlist" data-product-id="<%= product._id %>">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    <% } else { %>
+                                        <button class="btn btn-sm text-primary p-0 add-to-wishlist" data-product-id="<%= product._id %>">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    <% } %>
+                                    <% } %>
                             </div>
                         </div>
                     </div>
                 <% }) %>
             </div>
                
-        <!-- Gallery Area End -->
-        <!--? Popular Items Start -->
-        
-        <!-- Watch Choice  End-->
+
         
     </main>
 
@@ -139,5 +161,75 @@
             </div>
         </div>
 
-    
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const handleWishlistButtonClick = async (event) => {
+                    const button = event.target.closest('button');
+                    if (!button) return;
+        
+                    const productId = button.getAttribute('data-product-id');
+                    const isAdding = button.classList.contains('add-to-wishlist');
+                    const url = isAdding ? '/add-to-wishlist' : '/remove-from-wishlist';
+        
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ productId }),
+                        });
+        
+                        const data = await response.json();
+        
+                        if (data.success) {
+                            if (isAdding) {
+                                button.classList.remove('add-to-wishlist');
+                                button.classList.add('remove-from-wishlist');
+                                button.innerHTML = '<i class="fas fa-heart text-danger"></i>';
+                                showNotification('Product Added to wishlist');
+                            } else {
+                                button.classList.remove('remove-from-wishlist');
+                                button.classList.add('add-to-wishlist');
+                                button.innerHTML = '<i class="far fa-heart text-primary"></i>';
+                                showNotification('Product Removed from wishlist');
+                            }
+                        } else {
+                            alert(data.message || 'Failed to update wishlist.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    }
+                };
+        
+                document.getElementById('product-list').addEventListener('click', handleWishlistButtonClick);
+            });
+        
+            function showNotification(message, type) {
+                    var notificationContainer = $('#notification-container');
+                    var notification = $('<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + 
+                                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + 
+                                         '<span aria-hidden="true"></span></button>' + message + '</div>');
+                    notificationContainer.append(notification);
+                    
+        
+                    setTimeout(function() {
+                        notification.fadeOut(500, function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                }
+        </script>
+
+    <script>
+        setTimeout(()=>{
+            const flashMessages = document.querySelectorAll('.flash-message')
+            flashMessages.forEach(message=>{
+                    message.remove()
+                })
+        },3000)
+    </script>
+
+<script src="/myjsscript/addToCart.js"></script>
 

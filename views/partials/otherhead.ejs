@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoCraft</title>
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/images/logo/chrono.jpg">
+
+    
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/slicknav.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/mylogin.css">
+    <link href="/eshop/css/style.css" rel="stylesheet">
+
+<style>
+    .zoom-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .zoom-container img {
+            transition: transform 0.5s ease;
+        }
+        .zoom-container:hover img {
+            transform: scale(1.5);
+        }
+
+        .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .dropdown-content a {
+    color: black;
+    padding: 6px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+    
+  }
+ 
+
+        .address-card {
+            margin-bottom: 20px;
+        }
+        .address-card .card-body {
+            position: relative;
+        }
+        .address-card .card-body .edit-btn, .address-card .card-body .delete-btn {
+            position: absolute;
+            top: 10px;
+        }
+        .address-card .card-body .edit-btn {
+            right: 60px;
+        }
+        .address-card .card-body .delete-btn {
+            right: 10px;
+        }
+    
+</style>
+
+<style>
+    .flash-message {
+        
+    position: fixed; 
+    bottom: 20px;
+    left: 50%; 
+    transform: translateX(-50%); 
+    z-index: 1000;
+    background: linear-gradient(to right, #196e86, #193354);
+
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    color: white;
+    text-align: center;
+    font-size: 16px; 
+    font-family: 'Arial', sans-serif; 
+    padding: 10px 20px; 
+    width: auto; 
+    height: auto;
+    max-width: 80%; 
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    padding: 10px;
+}
+#notification-container {
+        
+        background: linear-gradient(to right, #196e86, #193354);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+        color: white;
+        text-align: center;
+        font-size: 16px; 
+        font-family: 'Arial', sans-serif; 
+        /* padding: 10px 20px;  */
+        width: auto; 
+         max-width: 80%;  
+         height: 2.5rem;
+         position: fixed; 
+        top: 10px; 
+        right: 10px; 
+        z-index: 9999;
+         display: flex;
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+        padding-top: 17px;
+
+    }
+
+    .alert-success {
+        background: linear-gradient(to right, #196e86, #193354);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+        color: white;
+        text-align: center;
+        font-size: 16px; 
+        font-family: 'Arial', sans-serif; 
+        width: auto; 
+        max-width: 80%;  
+        height: auto;
+        position: fixed; 
+        top: 10px; 
+        right: 10px; 
+        z-index: 9999;
+        display: flex;
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+        padding: 10px; 
+    }
+
+    .alert-danger {
+        background-color: #dc3545 !important; 
+        color: white !important;
+    
+    }
+
+    .delivery-title {
+    background-color: #EDF1FF;
+    padding: 10px;
+    margin-bottom: 0;
+    font-family: Inter, -apple-system, Helvetica, Arial, sans-serif;
+}
+
+.address-list {
+    border: 1px solid #e0e0e0;
+}
+
+.address-item {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.address-item:last-child {
+    border-bottom: none;
+}
+
+.address-item input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    color: darkblue;
+    background-color: darkblue;
+}
+
+.address-item label {
+    display: block;
+    cursor: pointer;
+    padding-left: 30px;
+}
+
+.address-item label::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 20px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4285f4;
+    border-radius: 50%;
+}
+
+.address-item input[type="radio"]:checked + label::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 25px;
+    width: 10px;
+    height: 10px;
+    background: #4285f4;
+    border-radius: 50%;
+}
+
+.name-type {
+    margin-bottom: 5px;
+}
+
+.name {
+    font-weight: bold;
+}
+
+.type {
+    background-color: #f0f0f0;
+    padding: 2px 5px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+.phone {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.address-details {
+    margin-bottom: 10px;
+}
+
+.deliver-btn {
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.edit-link {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: darkblue;
+    text-decoration: none;
+    font-size: small;
+    font-weight: 600;
+}
+
+.add-address {
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.add-address-link {
+    color: #4285f4;
+    text-decoration: none;
+}
+</style>
+    
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.2.2/dist/panzoom.min.css">
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+</head>
+<body>
+   
+    <header>
+        <!-- Header Start -->
+        <div class="container-fluid">
+        <div class="row  py-2 px-xl-5">
+           
+        </div>
+        <div class="row align-items-center py-3 px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a href="/home" class="text-decoration-none">
+                    <img src="/images/logo/logo.png" alt="" style="width: 18rem;">
+                </a>
+            </div>
+            <div class="col-lg-6 col-6 text-left">
+                
+            </div>
+            <div class="col-lg-3 col-6 text-right">
+                <a href="/wishlist" class="btn border">
+                    <i class="fas fa-heart text-primary"></i>
+                    <span class="badge"></span>
+                </a>
+                <a href="/cart" class="btn border">
+                    <i class="fas fa-shopping-cart text-primary"></i>
+                    <span class="badge"></span>
+                </a>
+                
+                <div class="dropdown">
+                    
+                    <a href="" class="btn border"><i class="fas fa-user text-primary"></i></a>
+                    <div class="dropdown-content" style="z-index: 9999;">
+                        <% if (isLoggedIn) { %>
+                            <a href="/profile-details">Profile</a>
+                            <a href="/view-orders">Orders</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout">Logout</a>
+                            <% } else { %>
+                                <a href="/login" style="padding-right: 35px;">Login</a>
+                                <a href="/register">Register</a>
+                            <% } %>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+    
+        <!-- <a href="#" class="btn border" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-user text-primary"></i>
+        </a> -->
+        
+
+
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                
+                
+            </div>
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                       
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="/home" class="nav-item nav-link">Home</a>
+                            <a href="/shop" class="nav-item nav-link">Shop</a>
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Category</a>
+                                <div class="dropdown-menu rounded-0 m-0">
+                                    <a href="/category/Analog" class="dropdown-item">Analog</a>
+                                    <a href="/category/Digital" class="dropdown-item">Digital</a>
+                                    <a href="/category/SmartWatch" class="dropdown-item">SmartWatch</a>
+                                    <a href="/category/Luxury" class="dropdown-item">Luxury</a>
+                                </div>
+                            </div>
+                            <a href="/contact-us" class="nav-item nav-link">Contact</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0">
+                            
+                        </div>
+                        
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+        <style>
+            .main_product_img img {
+                max-width: 100%;
+                height: auto;
+            }
+            .product_thumbnails img {
+                width: 100px;
+                margin: 5px;
+                cursor: pointer;
+            }
+
+        
+        </style>
+
+         
+    </header>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/myjsscript/vaidation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.2.2/dist/panzoom.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
+    
+    <script src="/path/to/jquery.min.js"></script>
+    <script src="/path/to/jquery.magnific-popup.min.js"></script>

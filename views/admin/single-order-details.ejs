@@ -1,0 +1,156 @@
+<%- include('../partials/adminheader.ejs') %>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .section {
+    margin-bottom: 20px;
+  }
+  .section-title {
+    background-color: #e6e6fa;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .order-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .order-details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  .order-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .order-item img {
+    width: 120px;
+    height: 120px;
+    margin-right: 10px;
+  }
+  .right-aligned {
+    text-align: right;
+  }
+  .details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .delivery-date {
+    font-weight: bold;
+    color: #007bff;
+  }
+</style>
+
+<div class="container">
+  <div class="section order-summary">
+    <h2 class="section-title">Order Summary</h2>
+    <% order.items.forEach(item => { %>
+    <div class="order-item">
+      <img src="<%= item.product.images[0] %>" alt="<%= item.product.name %>" />
+      <div>
+        <p><strong><%= item.product.name %></strong></p>
+        <p>Price : ₹ <%= item.product.price %></p>
+        <p>Quantity : <%= item.quantity %></p>
+        <% if(order.status !== 'Cancelled'){ %>
+        <p class="ordered-date" style="display: none">
+          Ordered On : <%= new Date(order.createdAt).toLocaleDateString() %>
+        </p>
+        <% if(order.status == 'Yet to be Delivered') {%>
+        <p>
+          <strong>Expected Delivery : </strong>
+          <span class="delivery-date"></span>
+        </p>
+        <% } %> <% } %> <% if(order.status == 'Cancelled'){ %>
+        <p style="color: red">
+          <strong style="color: black !important">Status : </strong><%=
+          order.status %>
+        </p>
+        <% }else if(order.status == 'Delivered'){ %>
+        <p style="color: green">
+          <strong style="color: black !important">Status : </strong><%=
+          order.status %>
+        </p>
+        <% }else if(order.status == 'Returned'){ %>
+        <p style="color: rgb(170, 142, 38)">
+          <strong style="color: black !important">Status : </strong> <%=
+          order.status %>
+        </p>
+        <% }else{ %>
+        <p style="color: rgb(28, 23, 176)">
+          <strong style="color: black !important">Status : </strong><%=
+          order.status %>
+        </p>
+        <% } %>
+      </div>
+    </div>
+    <% }); %>
+
+    <div class="order-details">
+      <div>
+        <p><strong>Discount : </strong> ₹ <%= order.discount || '0' %></p>
+        <p><strong>Shipping : </strong> Free</p>
+        <p><strong>Total : </strong> ₹ <%= order.priceAfterDiscount %></p>
+      </div>
+      <div class="right-aligned">
+        <p>
+          <strong>Ordered Date : </strong> <%= new
+          Date(order.createdAt).toLocaleDateString() %>
+        </p>
+        <p><strong>Payment : </strong> <%= order.paymentMethod %></p>
+      </div>
+    </div>
+    <div class="section">
+      <h2 class="section-title">Billing Address</h2>
+      <div class="details">
+        <p><strong>Name:</strong> <%= order.user.name %></p>
+        <p><strong>Email:</strong> <%= order.user.email %></p>
+        <p><strong>Mobile:</strong> <%= order.user.mobile %></p>
+        <p><strong>Street:</strong> <%= order.address.street %></p>
+        <p><strong>City:</strong> <%= order.address.city %></p>
+        <p><strong>State:</strong> <%= order.address.state %></p>
+        <p><strong>Pincode:</strong> <%= order.address.pincode %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+
+    document.querySelectorAll(".ordered-date").forEach((element) => {
+      const orderDate = new Date(
+        element.textContent.replace("Ordered On : ", "")
+      );
+      orderDate.setDate(orderDate.getDate() + 3);
+      const expectedDay = days[orderDate.getDay()];
+      const deliveryDateElement = element
+        .closest(".order-item")
+        .querySelector(".delivery-date");
+      deliveryDateElement.textContent = `${expectedDay}, ${orderDate.toDateString()}`;
+    });
+  });
+</script>

@@ -3,7 +3,22 @@ const admin_route = express.Router();
 
 const auth = require("../middlewares/auth");
 
-const adminController = require("../controllers/adminController");
+const adminController = require("../controllers/admin/adminController");
+const adminOrderController = require("../controllers/admin/adminOrderController");
+const adminCouponController = require("../controllers/admin/adminCouponController");
+const salesReportController = require("../controllers/admin/salesReportController");
+
+const validateObjectId = (req, res, next) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid ObjectId" });
+  }
+
+  next();
+};
 
 admin_route.get("/", auth.isLogout, adminController.loadLogin);
 admin_route.post("/", auth.isLogout, adminController.verifyLogin);
@@ -71,19 +86,13 @@ admin_route.get("/all-categories", adminController.getAllCategories);
 
 admin_route.get("/product/:id", adminController.getSingleProduct);
 
-// admin_route.post("/createcategories", adminController.createCategories);
+admin_route.get("/category", adminController.loadCategories);
 
+admin_route.get("/category/add-category", adminController.addCategory);
+admin_route.post("/category/add-category", adminController.addCategory);
 
-
-admin_route.get('/category',adminController.loadCategories)
-
-
-
-admin_route.get('/category/add-category',adminController.addCategory)
-admin_route.post('/category/add-category', adminController.addCategory)
-
-admin_route.get('/category/edit-category',adminController.editCategory)
-admin_route.post('/category/edit-category',adminController.updateCategory)
+admin_route.get("/category/edit-category", adminController.editCategory);
+admin_route.post("/category/edit-category", adminController.updateCategory);
 
 admin_route.get(
   "/category/:categoryName",
@@ -91,13 +100,60 @@ admin_route.get(
   adminController.categoryName
 );
 
-admin_route.get('/category',adminController.loadCategories)
+admin_route.get("/category", adminController.loadCategories);
 
-// admin_route.put('/admin/category/:id/activate',auth.isLogin, adminController.activateCategory);
-// admin_route.put('/admin/category/:id/deactivate',auth.isLogin, adminController.deactivateCategory);
+admin_route.post(
+  "/category/toggle-status/:id",
+  adminController.toggleCategoryStatus
+);
 
-admin_route.post('/category/toggle-status/:id', adminController.toggleCategoryStatus);
+admin_route.get(
+  "/products/delete-image",
+  auth.isLogin,
+  adminController.deleteImage
+);
 
-admin_route.get('/products/delete-image',auth.isLogin,adminController.deleteImage)
+admin_route.get(
+  "/order-details",
+  auth.isLogin,
+  adminOrderController.orderDetails
+);
+
+admin_route.get(
+  "/single-order-details/:orderId",
+  auth.isLogin,
+  adminOrderController.singleOrderDetails
+);
+
+admin_route.post(
+  "/change-status/:orderId",
+  auth.isLogin,
+  adminOrderController.changeOrderStatus
+);
+
+admin_route.get(
+  "/coupon-details",
+  auth.isLogin,
+  adminCouponController.getCouponPage
+);
+admin_route.post("/add-coupon", auth.isLogin, adminCouponController.addCoupon);
+
+admin_route.put(
+  "/coupon-details/:couponId/activate",
+  adminCouponController.activateCoupon
+);
+admin_route.put(
+  "/coupon-details/:couponId/deactivate",
+  adminCouponController.deactivateCoupon
+);
+
+admin_route.get("/sales-report", (req, res) => {
+  res.render("admin/sales-report");
+});
+
+admin_route.get(
+  "/sales-report-data",
+  salesReportController.generateSalesReport
+);
 
 module.exports = admin_route;

@@ -1,15 +1,20 @@
 <%- include('../partials/adminheader.ejs') %>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 <style>
     body {
         background-color: rgb(152, 180, 152);
+        height: 100vh;
     }
     .btn{
         width: 5rem;
     }
 </style>
-<!-- <div style="margin-left: 5%;margin-right: 5%;background-color: #76ac93; display: flex;justify-content: center;" class="pt-4">
-    <img src="/images/logo/logo.png" alt="" style="width: 30%;">
-</div> -->
+
 
 <div style="margin-left: 5%;margin-right: 5%;">
     
@@ -21,18 +26,22 @@
     
     
     
-<!--     
-    <a href="/admin/home" data-mdb-button-init
-    data-mdb-ripple-init class="btn btn-success  btn-lg gradient-custom-4 text-body" >0</a> -->
+
     </div><br>
+    <div class="col-lg-8">
+        <form action="/admin/users-list" method="get" class="d-flex justify-content-center mb-4 mt-4">
+          <input type="text" name="search" id="" placeholder="search users ..." class="form-control" style="border-radius: 8px;" value="<%= searchQuery %>">
+          <button type="submit" class="btn btn-primary ms-3">Search</button>
+        </form> 
+        </div>  
     <div class="container">
     <table class="table table-success table-striped" border="1" style="background-color: #76ac93">
         <thead>
             <tr>
-                <th style="width: 20rem;">ID</th>
+                <!-- <th style="width: 20rem;">ID</th> -->
                 <th style="width: 15rem;">Name</th>
                 <th>Email</th>
-                <!-- <th style="width: 15%;">Mobile</th> -->
+                <th style="width: 15%;">Mobile</th>
                 <th style="width: 10rem;">Status</th>
                 <th>Action</th>
             </tr>
@@ -40,10 +49,10 @@
         <tbody>
             <% users.forEach(users => { %>
                 <tr>
-                    <td><%= users._id %></td>
+                    <!-- <td><%= users._id %></td> -->
                     <td><%= users.name %></td>
                     <td><%= users.email %></td>
-                    <!-- <td>1234569870></td> -->
+                    <td><%= users.mobile %></td>
                     <td id="status_<%= users._id %>">
                         <!-- Displaying user status -->
                         <% if (users.blocked) { %>
@@ -71,6 +80,32 @@
     </section>
     <br>
 
+    <div class="d-flex justify-content-center">
+        <% if (totalPages > 1) { %>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/admin/users-list?page=<%= currentPage - 1 %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;">Previous</a>
+                        </li>
+                    <% } %>
+                    
+                    <% for(let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="/admin/users-list?page=<%= i %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;"><%= i %></a>
+                        </li>
+                    <% } %>
+                    
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/admin/users-list?page=<%= currentPage + 1 %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;">Next</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        <% } %>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 
@@ -81,26 +116,24 @@
     async function blockUser(userId) {
         try {
             const response = await axios.put(`/admin/users-list/${userId}/block`);
-            console.log('User blocked:', response.data);
 
             const statusCell = document.getElementById(`status_${userId}`);
             statusCell.textContent = 'Blocked';
 
             const button = document.getElementById(`blockButton_${userId}`);
-            button.innerText = 'Unblock'; // Change button text
+            button.innerText = 'Unblock'; 
             button.style.backgroundColor = 'green'
             button.style.color = 'white'
-            button.setAttribute('onclick', `unblockUser('${userId}')`); // Update onclick handler
+            button.setAttribute('onclick', `unblockUser('${userId}')`); 
         } catch (error) {
             console.error('Error blocking user:', error);
-            // Handle error
+            
         }
     }
 
     async function unblockUser(userId) {
         try {
             const response = await axios.put(`/admin/users-list/${userId}/unblock`);
-            console.log('User unblocked:', response.data);
 
             const statusCell = document.getElementById(`status_${userId}`);
             statusCell.textContent = 'Active';
@@ -109,10 +142,9 @@
             button.innerText = 'Block'; // Change button text
             button.style.backgroundColor = 'red'
             button.style.color = 'white'
-            button.setAttribute('onclick', `blockUser('${userId}')`); // Update onclick handler
+            button.setAttribute('onclick', `blockUser('${userId}')`); 
         } catch (error) {
             console.error('Error unblocking user:', error);
-            // Handle error
         }
     }
 </script>

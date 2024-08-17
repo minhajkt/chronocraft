@@ -1,0 +1,339 @@
+<%- include('../partials/adminheader.ejs') %>
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
+
+<style>
+  th {
+    text-align: center;
+  }
+  td {
+    text-align: center;
+  }
+  body {
+    height: 100vh;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 25%;
+    top: 0;
+    width: 60%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    overflow: auto;
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .error {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+  }
+</style>
+
+<div style="margin-left: 5%; margin-right: 5%">
+  <div style="background-color: #76ac93">
+    <h1 class="text text-center pt-2" style="font-weight: bold">Coupon List</h1>
+    <!-- <p style="color: red;text-align: center;"></p>
+      <p style="color: red;text-align: center;"> </p> -->
+    <div class="container">
+      <div class="row">
+        <div class="d-flex justify-content-end">
+          <div style="text-align: end">
+            <a
+              href="javascript:void(0);"
+              data-mdb-button-init
+              data-mdb-ripple-init
+              class="btn btn-success btn-lg gradient-custom-4 text-body"
+              style="background-color: green !important; color: white"
+              id="openAddCouponModal"
+              >Add Coupon</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+  </div>
+
+  <table
+    class="customm-table table table-success table-striped"
+    border="1"
+    style="background-color: #76ac93"
+  >
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Discount Type</th>
+        <th>Discount Value</th>
+        <th>Expiration Date</th>
+        <th>Used Count</th>
+        <th>Min Cart Value</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% coupons.forEach(coupon => { %>
+      <tr>
+        <td><%= coupon.code %></td>
+        <td><%= coupon.discountType %></td>
+        <td><%= coupon.discountValue %></td>
+        <td><%= coupon.expirationDate.toISOString().split('T')[0] %></td>
+        <td><%= coupon.usedCount %></td>
+        <td><%= coupon.minimumCartValue %></td>
+        <td id="status_<%= coupon._id %>" style="width: 6rem">
+          <% if (coupon.active) { %> Active <% } else { %> Inactive <% } %>
+        </td>
+        <td style="width: 6rem">
+          <% if (coupon.active) { %>
+          <button
+            class="btn"
+            id="activateButton_<%= coupon._id %>"
+            onclick="deactivateCoupon('<%= coupon._id %>')"
+            style="background-color: red !important; color: white; width: 6rem"
+          >
+            Deactivate
+          </button>
+          <% } else { %>
+          <button
+            class="btn"
+            id="activateButton_<%= coupon._id %>"
+            onclick="activateCoupon('<%= coupon._id %>')"
+            style="
+              background-color: green !important;
+              color: white;
+              width: 6rem;
+            "
+          >
+            Activate
+          </button>
+          <% } %>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <div id="addCouponModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <form id="addCouponForm" action="/admin/add-coupon" method="POST">
+        <label for="code">Coupon Code:</label>
+        <input type="text" id="code" name="code" /><br />
+        <div id="codeError" class="error"></div>
+
+        <label for="discountType">Discount Type:</label>
+        <select id="discountType" name="discountType">
+          <option value="percentage">Percentage</option>
+          <option value="amount">Amount</option></select
+        ><br />
+        <div id="discountTypeError" class="error"></div>
+
+        <label for="discountValue">Discount Value:</label>
+        <input type="number" id="discountValue" name="discountValue" /><br />
+        <div id="discountValueError" class="error"></div>
+
+        <label for="expirationDate">Expiration Date:</label>
+        <input type="date" id="expirationDate" name="expirationDate" /><br />
+        <div id="expirationDateError" class="error"></div>
+
+        <label for="usageLimit">minimumCartValue:</label>
+        <input
+          type="number"
+          id="minimumCartValue"
+          name="minimumCartValue"
+        /><br />
+        <div id="minimumCartValueError" class="error"></div>
+
+        <button type="submit">Add Coupon</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    var modal = document.getElementById("addCouponModal");
+
+    var addButton = document.getElementById("openAddCouponModal");
+
+    var span = document.getElementsByClassName("close")[0];
+
+    addButton.onclick = function () {
+      modal.style.display = "block";
+    };
+
+    span.onclick = function () {
+      modal.style.display = "none";
+    };
+
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    };
+  </script>
+
+  <script>
+    document
+      .getElementById("addCouponForm")
+      .addEventListener("submit", function (event) {
+        let formIsValid = true;
+
+        document
+          .querySelectorAll(".error")
+          .forEach((errorDiv) => (errorDiv.textContent = ""));
+
+        const code = document.getElementById("code").value.trim();
+        const discountType = document.getElementById("discountType").value;
+        const discountValue = parseFloat(
+          document.getElementById("discountValue").value
+        );
+        const expirationDate = new Date(
+          document.getElementById("expirationDate").value
+        );
+        const minimumCartValueInput =
+          document.getElementById("minimumCartValue").value;
+
+        if (!code) {
+          document.getElementById("codeError").textContent =
+            "Coupon code cannot be empty.";
+          formIsValid = false;
+        }
+
+        if (isNaN(discountValue) || discountValue <= 0) {
+          document.getElementById("discountValueError").textContent =
+            "Enter a valid discount amount";
+          formIsValid = false;
+        }
+
+        if (isNaN(expirationDate) || expirationDate < today) {
+          document.getElementById("expirationDateError").textContent =
+            "Enter a valid expiry date";
+          formIsValid = false;
+        }
+
+        if (
+          minimumCartValue === "" ||
+          isNaN(minimumCartValue) ||
+          minimumCartValue < 0
+        ) {
+          document.getElementById("minimumCartValueError").textContent =
+            "Enter a valid cart value";
+          formIsValid = false;
+        }
+
+        if (!formIsValid) {
+          event.preventDefault();
+        }
+      });
+
+    document.getElementById("code").addEventListener("input", function () {
+      document.getElementById("codeError").textContent = "";
+    });
+
+    document
+      .getElementById("discountValue")
+      .addEventListener("input", function () {
+        document.getElementById("discountValueError").textContent = "";
+      });
+
+    document
+      .getElementById("expirationDate")
+      .addEventListener("input", function () {
+        document.getElementById("expirationDateError").textContent = "";
+      });
+
+    document
+      .getElementById("minimumCartValue")
+      .addEventListener("input", function () {
+        document.getElementById("minimumCartValueError").textContent = "";
+      });
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const successMsg = "<%= successMsg %>";
+      if (successMsg) {
+        Toastify({
+          text: successMsg,
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          backgroundColor: "linear-gradient(to right, #196e86, #193354)",
+        }).showToast();
+      }
+    });
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    async function activateCoupon(couponId) {
+      try {
+        const response = await axios.put(
+          `/admin/coupon-details/${couponId}/activate`
+        );
+        console.log("Coupon activated:", response.data);
+
+        const statusCell = document.getElementById(`status_${couponId}`);
+        statusCell.textContent = "Active";
+
+        const button = document.getElementById(`activateButton_${couponId}`);
+        button.innerText = "Deactivate";
+        button.style.backgroundColor = "red";
+        button.style.color = "white";
+        button.setAttribute("onclick", `deactivateCoupon('${couponId}')`);
+      } catch (error) {
+        console.error("Error activating coupon:", error);
+      }
+    }
+
+    async function deactivateCoupon(couponId) {
+      try {
+        const response = await axios.put(
+          `/admin/coupon-details/${couponId}/deactivate`
+        );
+        console.log("Coupon deactivated:", response.data);
+
+        const statusCell = document.getElementById(`status_${couponId}`);
+        statusCell.textContent = "Inactive";
+
+        const button = document.getElementById(`activateButton_${couponId}`);
+        button.innerText = "Activate";
+        button.style.backgroundColor = "green";
+        button.style.color = "white";
+        button.setAttribute("onclick", `activateCoupon('${couponId}')`);
+      } catch (error) {
+        console.error("Error deactivating coupon:", error);
+      }
+    }
+  </script>
+
+  <%- include('../partials/adminfooter.ejs') %>
+</div>

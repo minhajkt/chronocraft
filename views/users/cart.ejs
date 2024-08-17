@@ -1,0 +1,431 @@
+<%- include('../partials/otherhead') %>
+
+<style>
+    body.modal-open {
+    padding-right: 0 !important;
+}
+
+
+</style>
+
+<div class="container-fluid bg-secondary mb-5">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">Cart</h1>
+        <div class="d-inline-flex">
+            <p class="m-0"><a href="/home">Home</a></p>
+            <p class="m-0 px-2">-</p>
+            <p class="m-0">Shop</p>
+        </div>
+    </div>
+</div>
+
+<div id="notification-container" style="position: fixed; top: 10px; right: 10px; z-index: 9999; color: red !important"></div>
+
+
+<% if(cart && cart.product.length > 0) { %>
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <div class="col-lg-8 table-responsive mb-5">
+            <table class="table table-bordered text-center mb-0">
+                <thead class="bg-secondary text-dark">
+                    <tr>
+                        <th></th>
+                        <th>Products</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+
+                <tbody class="align-middle">
+               
+             <% cart.product.forEach(item => { %>
+                        <tr>
+                            <td><img src="<%= item.productId.images[0] %>" alt="" srcset="" style="width: 80px;height: 80px;"></td>
+                        <td class="align-middle"><img src="" alt="" style="width: 50px;"> <%= item.productId.name %> </td>
+                        <td class="align-middle"> <%=  item.productId.price %> </td>
+                        <td class="align-middle">
+                            <div class="input-group quantity mx-auto" style="width: 100px;">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-sm btn-primary btn-minus" data-product-id="<%= item.productId._id %>" >
+                                    <i class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control form-control-sm bg-secondary text-center quantity-input" value=" <%= item.quantity %>" data-product-id="<%= item.productId._id %>">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-sm btn-primary btn-plus" data-product-id="<%= item.productId._id %>">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="align-middle"> <%= item.productId.price * item.quantity %> </td>
+                            <td class="align-middle"><button class="btn btn-sm btn-primary remove-from-cart" data-product-id="<%= item.productId._id %>"><i class="fa fa-times"></i></button></td>
+                        </tr>
+                   
+            
+            <% }) %>
+            
+        </tbody>
+    </table>
+</div>
+
+
+    <div class="col-lg-4">
+        <form class="mb-5" id="applyCouponForm">
+            <div class="input-group">
+                <select class="form-control p-4 coupon-select" id="couponCode" required>
+                    <option value="" disabled selected>Select a Coupon</option>
+                    <% coupons.forEach(coupon => { %>
+                    <option value="<%= coupon.code %>" <%= coupon.isEnabled ? '' : 'disabled' %>>
+                        <%= coupon.code %> - <%= coupon.discountType === 'percentage' ? coupon.discountValue + '%' : '₹' + coupon.discountValue %> off
+                        <% if (coupon.minimumCartValue) { %> (Min cart value: ₹<%= coupon.minimumCartValue %>)<% } %>
+                    </option>
+                        <% }); %>
+                </select>
+                <input type="hidden" id="couponDisplay" class="form-control" readonly />
+                <button type="button" id="removeCoupon" class="btn btn-danger ml-2">X</button>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Apply</button>
+                </div>
+            </div>
+            <div id="couponMessage" class="mt-2"></div>
+        </form>
+
+    <div class="card border-secondary mb-5">
+        <div class="card-header bg-secondary border-0">
+            <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-between mb-3 pt-1">
+                <h6 class="font-weight-medium">Subtotal</h6>
+                <% if(cart){ %>
+                <h6 class="font-weight-medium" id="cartSubtotal"> <%= cart.totalPrice.toFixed(2) %> </h6>
+                <% } %>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <h6 class="font-weight-medium">Discount</h6>
+                <% if(cart.coupon){ %>
+                    <h6 class="font-weight-medium" id="cartDiscount"> <%= discount %> </h6>
+                <% } else {%>
+                    <h6 class="font-weight-medium" id="cartDiscount"> 0 </h6>
+                    <% } %>
+            </div>
+            <div class="d-flex justify-content-between">
+                <h6 class="font-weight-medium">Shipping</h6>
+                <h6 class="font-weight-medium"> Free </h6>
+            </div>
+        </div>
+        <div class="card-footer border-secondary bg-transparent">
+            <div class="d-flex justify-content-between mt-2">
+                <h5 class="font-weight-bold">Total</h5>
+                <% if(cart.coupon){ %>
+                <h5 class="font-weight-bold" id="cartTotal"> <%= finalPrice.toFixed(2)%> </h5>
+                <% } else {%>
+                    <h5 class="font-weight-bold" id="cartTotal"> <%= cart.totalPrice.toFixed(2)%> </h5> 
+                    <% } %>
+            </div>
+            <button id="checkout-button" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+        </div>
+    </div>
+</div>
+
+
+    <% } else { %>
+        <div class="justify-content-center align-items-center"  >
+            <div class="col-6 text-center">
+                <img src="/images/myimages/empty.png" alt="Empty Cart" style="margin-left: 78%; width: 50%;height: 50%;">
+            </div>
+
+            <p style="margin-left: 46%;color: black;">Your Cart is Empty</p>
+            <div class="col-6 text-center">
+                
+                <a href="/shop" class="btn btn-primary" style="margin-left: 94%">Shop Now</a>
+            </div>
+        </div>
+    <% } %> 
+
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to remove this product from your cart?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmRemove">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('checkout-button').addEventListener('click', function() {
+        window.location.href = '/checkout-address';
+    });
+
+    
+</script>
+
+
+    <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const removeFromCartButtons = document.querySelectorAll('.remove-from-cart');
+                    let productIdToRemove = null;
+
+                    removeFromCartButtons.forEach(button => {
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            productIdToRemove = this.getAttribute('data-product-id');
+                            $('#confirmationModal').modal('show');
+                                });
+                            });
+            
+
+                            document.getElementById('confirmRemove').addEventListener('click', function() {
+                            if (productIdToRemove) {
+                            fetch('/remove-from-cart', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ productId: productIdToRemove}),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                
+                                if (data.success) {
+                                    localStorage.setItem('notification', JSON.stringify({
+                                    message: 'Product Removed From the Cart',
+                                    type: 'success'
+                                    }));
+                                    window.location.reload();
+                                } else {
+                                    showNotification('Failed to remove the product from cart: ' + (data.message || 'Unknown Error'), 'danger');
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                                showNotification('An error occurred. Please try again.', 'danger');
+                            });
+                        };
+                        $('#confirmationModal').modal('hide');
+                    });
+                    const notification = JSON.parse(localStorage.getItem('notification'));
+                    if (notification) {
+                        showNotification(notification.message, notification.type);
+                        localStorage.removeItem('notification'); 
+                    }
+                    });
+
+            
+
+            
+                function showNotification(message, type) {
+                    var notificationContainer = $('#notification-container');
+                    var notification = $('<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + 
+                                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + 
+                                         '<span aria-hidden="true">&times;</span></button>' + message + '</div>');
+                    notificationContainer.append(notification);
+            
+                    setTimeout(function() {
+                        notification.fadeOut(500, function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                }
+            </script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('removeCoupon').addEventListener('click', function() {
+            var couponSelect = document.getElementById('couponCode');
+            var couponDisplay = document.getElementById('couponDisplay');
+
+            couponSelect.selectedIndex = 0; 
+            couponDisplay.value = ''; 
+
+            fetch('/remove-coupon', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('cartDiscount').textContent = '0'; 
+                    document.getElementById('cartTotal').textContent = data.newTotal || '0'; 
+                    showNotification('Coupon removed and cart updated successfully!', 'success');
+                } else {
+                    showNotification('Failed to remove coupon: ' + (data.message || 'Unknown Error'), 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('An error occurred. Please try againn.');
+            });
+        });
+        });
+
+    document.getElementById('applyCouponForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const couponCode = document.getElementById('couponCode').value;
+        
+        fetch('/apply-coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code: couponCode })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('cartDiscount').textContent = data.discount || '0';
+                document.getElementById('cartTotal').textContent = data.newTotal || '0';
+                showNotification('Coupon applied successfully!', 'success');
+            } else {
+                showNotification('Failed to apply coupon: ' + (data.message || 'Unknown Error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred. Please try again.', 'danger');
+        });
+    });
+
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkStock = (productId, quantity) => {
+            return fetch('/check-stock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cart: [{ productId: productId, quantity: quantity }]
+                })
+            })
+            .then(response => response.json())
+            .then(data => data.success)
+            .catch(error => {
+                console.error('Error checking stock:', error);
+                return false;
+            });
+        };
+
+        const updateQuantity = (productId, quantity) => {
+            checkStock(productId, quantity).then(stockAvailable => {
+                if (stockAvailable) {
+                    fetch('/update-cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            productId: productId,
+                            quantity: quantity
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            localStorage.setItem('notification', JSON.stringify({
+                                message: 'Your Cart is Updated',
+                                type: 'success'
+                            }));
+                            window.location.reload();
+                        } else {
+                            showNotification('Failed to update Cart: ' + (data.message || 'Unknown Error'), 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.log('Error:', error);
+                        showNotification('An Error Occurred. Please Try Again', 'danger');
+                    });
+                } else {
+                    showNotification('Insufficient stock available.', 'danger');
+                    const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                    quantityInput.value = quantityInput.dataset.originalQuantity || quantityInput.value;
+                }
+            });
+        };
+
+        document.querySelectorAll('.btn-minus').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                
+                let quantity = parseInt(quantityInput.value, 10);
+                if (quantity > 1) {
+                    quantity--;
+                    quantityInput.value = quantity;
+                    updateQuantity(productId, quantity);
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-plus').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+                
+                let quantity = parseInt(quantityInput.value, 10);
+                quantity++;
+                quantityInput.value = quantity;
+                
+                updateQuantity(productId, quantity);
+            });
+        });
+
+        function showNotification(message, type) {
+            var notificationContainer = $('#notification-container');
+            var notification = $('<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + 
+                                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + 
+                                 '<span aria-hidden="true">&times;</span></button>' + message + '</div>');
+            notificationContainer.append(notification);
+
+            setTimeout(function() {
+                notification.fadeOut(500, function() {
+                    $(this).remove();
+                });
+            }, 3000);
+        }
+
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.dataset.originalQuantity = input.value;
+        });
+
+        const notification = JSON.parse(localStorage.getItem('notification'));
+        if (notification) {
+            showNotification(notification.message, notification.type);
+            localStorage.removeItem('notification');
+        }
+    });
+</script>
+
+
+            
+
+            
+            <%- include('../partials/proddetailsfoot') %>
+            
+
+            
+
+
+   

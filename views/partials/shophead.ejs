@@ -34,8 +34,244 @@
         .zoom-container:hover img {
             transform: scale(1.5);
         }
+
+        .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .dropdown-content a {
+    color: black;
+    padding: 6px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+    
+  }
+ 
+
+        .address-card {
+            margin-bottom: 20px;
+        }
+        .address-card .card-body {
+            position: relative;
+        }
+        .address-card .card-body .edit-btn, .address-card .card-body .delete-btn {
+            position: absolute;
+            top: 10px;
+        }
+        .address-card .card-body .edit-btn {
+            right: 60px;
+        }
+        .address-card .card-body .delete-btn {
+            right: 10px;
+        }
     
 </style>
+
+<style>
+    .flash-message {
+        
+    position: fixed; 
+    bottom: 20px;
+    left: 50%; 
+    transform: translateX(-50%); 
+    z-index: 1000;
+    background: linear-gradient(to right, #196e86, #193354);
+
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    color: white;
+    text-align: center;
+    font-size: 16px; 
+    font-family: 'Arial', sans-serif; 
+    padding: 10px 20px; 
+    width: auto; 
+    height: auto;
+    max-width: 80%; 
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    padding: 10px;
+}
+#notification-container {
+        
+        background: linear-gradient(to right, #196e86, #193354);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+        color: white;
+        text-align: center;
+        font-size: 16px; 
+        font-family: 'Arial', sans-serif; 
+        /* padding: 10px 20px;  */
+        width: auto; 
+         max-width: 80%;  
+         height: 2.5rem;
+         position: fixed; 
+        top: 10px; 
+        right: 10px; 
+        z-index: 9999;
+         display: flex;
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+        padding-top: 17px;
+
+    }
+
+    .alert-success {
+        background: linear-gradient(to right, #196e86, #193354);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+        color: white;
+        text-align: center;
+        font-size: 16px; 
+        font-family: 'Arial', sans-serif; 
+        width: auto; 
+        max-width: 80%;  
+        height: auto;
+        position: fixed; 
+        top: 10px; 
+        right: 10px; 
+        z-index: 9999;
+        display: flex;
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+        padding: 10px; 
+    }
+
+    .alert-danger {
+        background-color: #dc3545 !important; 
+        color: white !important;
+    
+    }
+
+    .delivery-title {
+    background-color: #EDF1FF;
+    padding: 10px;
+    margin-bottom: 0;
+    font-family: Inter, -apple-system, Helvetica, Arial, sans-serif;
+}
+
+.address-list {
+    border: 1px solid #e0e0e0;
+}
+
+.address-item {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.address-item:last-child {
+    border-bottom: none;
+}
+
+.address-item input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    color: darkblue;
+    background-color: darkblue;
+}
+
+.address-item label {
+    display: block;
+    cursor: pointer;
+    padding-left: 30px;
+}
+
+.address-item label::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 20px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4285f4;
+    border-radius: 50%;
+}
+
+.address-item input[type="radio"]:checked + label::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 25px;
+    width: 10px;
+    height: 10px;
+    background: #4285f4;
+    border-radius: 50%;
+}
+
+.name-type {
+    margin-bottom: 5px;
+}
+
+.name {
+    font-weight: bold;
+}
+
+.type {
+    background-color: #f0f0f0;
+    padding: 2px 5px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+.phone {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.address-details {
+    margin-bottom: 10px;
+}
+
+.deliver-btn {
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.edit-link {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: darkblue;
+    text-decoration: none;
+    font-size: small;
+    font-weight: 600;
+}
+
+.add-address {
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.add-address-link {
+    color: #4285f4;
+    text-decoration: none;
+}
+</style>
+    
     
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.2.2/dist/panzoom.min.css">
@@ -43,10 +279,7 @@
 
 </head>
 <body>
-    <script defer src="/myjsscript/vaidation.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.2.2/dist/panzoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
+   
     <header>
         <!-- Header Start -->
         <div class="container-fluid">
@@ -60,30 +293,52 @@
                 </a>
             </div>
             <div class="col-lg-6 col-6 text-left">
-                <form action="">
+                <form id="search-form" action="/home" method="GET">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
+                        <input type="text" class="form-control" placeholder="Search for products" id="search-input" name="query" value="<%= searchQuery %>">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button type="submit" class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="col-lg-3 col-6 text-right">
-                <a href="" class="btn border">
+                <a href="/wishlist" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge"></span>
                 </a>
-                <a href="" class="btn border">
+                <a href="/cart" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge"></span>
                 </a>
+                
+                <div class="dropdown">
+                    
+                    <a href="" class="btn border"><i class="fas fa-user text-primary"></i></a>
+                    <div class="dropdown-content" style="z-index: 9999;">
+                        <% if (isLoggedIn) { %>
+                            <a href="/profile-details">Profile</a>
+                            <a href="/view-orders">Orders</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout">Logout</a>
+                            <% } else { %>
+                                <a href="/login" style="padding-right: 35px;">Login</a>
+                                <a href="/register">Register</a>
+                            <% } %>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
     <!-- Topbar End -->
+    
+        <!-- <a href="#" class="btn border" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-user text-primary"></i>
+        </a> -->
+        
 
 
     <!-- Navbar Start -->
@@ -107,15 +362,15 @@
                                     <a href="/category/Analog" class="dropdown-item">Analog</a>
                                     <a href="/category/Digital" class="dropdown-item">Digital</a>
                                     <a href="/category/SmartWatch" class="dropdown-item">SmartWatch</a>
+                                    <a href="/category/Luxury" class="dropdown-item">Luxury</a>
                                 </div>
                             </div>
                             <a href="/contact-us" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0">
-                            <a href="/login" class="nav-item nav-link">Login</a>
-                            <a href="/register" class="nav-item nav-link">Register</a>
-                            <a href="/logout" class="nav-item nav-link">Logout</a>
+                            
                         </div>
+                        
                     </div>
                 </nav>
             </div>
@@ -138,6 +393,12 @@
 
          
     </header>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/myjsscript/vaidation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.2.2/dist/panzoom.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
     
     <script src="/path/to/jquery.min.js"></script>
     <script src="/path/to/jquery.magnific-popup.min.js"></script>

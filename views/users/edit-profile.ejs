@@ -1,0 +1,116 @@
+<%- include('../partials/otherhead') %>
+
+<div class="container-fluid mb-5">
+    <div class="row border-top px-xl-5">
+        <!-- Sidebar for Categories -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <a class="btn shadow-none d-flex flex-column align-items-center justify-content-center bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                <% if(userData) { %>
+                    <p style="margin-bottom: 0;font-size: smaller; color: black;text-transform: capitalize">Hello,</p>
+                    <h6 class="m-0" style="font-weight: bolder;;"> <%= userData.name %> </h6>
+                  </a>
+        <% } %>
+            <nav class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
+                <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link" data-toggle="dropdown">Account Settings <i class="fa fa-angle-down float-right mt-1"></i></a>
+                        <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
+                            <a href="/profile-details" class="dropdown-item">Profile Information</a>
+                            <a href="/manage-address" class="dropdown-item">Manage Addresses</a>
+                            <a href="" class="dropdown-item">Baby's Dresses</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link" data-toggle="dropdown">Dresses <i class="fa fa-angle-down float-right mt-1"></i></a>
+                        <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
+                            <a href="" class="dropdown-item">Men's Dresses</a>
+                            <a href="" class="dropdown-item">Women's Dresses</a>
+                            <a href="" class="dropdown-item">Baby's Dresses</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link" data-toggle="dropdown">Dresses <i class="fa fa-angle-down float-right mt-1"></i></a>
+                        <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
+                            <a href="" class="dropdown-item">Men's Dresses</a>
+                            <a href="" class="dropdown-item">Women's Dresses</a>
+                            <a href="" class="dropdown-item">Baby's Dresses</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Form Container -->
+        <div class="col-lg-9">
+        <div class="form-container">
+            <h2 class="text-center">Personal Information</h2>
+            <button id="editButton" class="btn btn-primary mb-3"><i class="fas fa-edit"></i> Edit</button>
+            <% if(typeof msg !== 'undefined') {%>
+                <p style="color: green;text-align: center;"><%= msg %></p>
+            <% } %>
+            <form id="editForm" action="/edit-profile" method="POST" style="display: none;">
+                <input type="hidden" id="userId" name="userId" value="<%= userData._id %>">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="<%= userData.name %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="<%= userData.email %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="number" class="form-control" id="mobile" name="mobile" value="<%= userData.mobile %>" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" id="cancelEdit" class="btn btn-secondary ml-2">Cancel</button>
+            </form>
+            <div id="editMessage"></div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editButton = document.getElementById('editButton');
+        const editForm = document.getElementById('editForm');
+        const cancelEdit = document.getElementById('cancelEdit');
+
+        editButton.addEventListener('click', function () {
+            editForm.style.display = 'block';
+            this.style.display = 'none'; 
+        });
+
+        cancelEdit.addEventListener('click', function () {
+            editForm.style.display = 'none';
+            editButton.style.display = 'block'; 
+        });
+    });
+</script>
+
+
+
+
+
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+
+
+
+</body>
+</html>
+
+<%- include('../partials/proddetailsfoot') %>

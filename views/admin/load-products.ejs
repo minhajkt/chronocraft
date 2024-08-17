@@ -7,6 +7,9 @@
   td {
     text-align: center;
   }
+  body {
+    height: 100vh;
+  }
 </style>
 
 <div style="margin-left: 5%; margin-right: 5%">
@@ -14,7 +17,8 @@
     <h1 class="text text-center pt-2" style="font-weight: bold">
       Product List
     </h1>
-    <p style="color: red;text-align: center;"> <%= updatemsg %> </p>
+    <p style="color: red; text-align: center"><%= updatemsg %></p>
+    <p style="color: red; text-align: center"><%= prodAddSuccess %></p>
     <div class="container">
       <div class="row">
         <div class="d-flex justify-content-end">
@@ -34,6 +38,25 @@
     <br />
   </div>
   <!-- <a href="/admin/products/add-product">Add Products</a> -->
+
+  <div class="col-lg-8">
+    <form
+      action="/admin/load-products"
+      method="get"
+      class="d-flex justify-content-center mb-4 mt-4"
+    >
+      <input
+        type="text"
+        name="search"
+        id=""
+        placeholder="search products ..."
+        class="form-control"
+        style="border-radius: 8px"
+        value="<%= searchQuery %>"
+      />
+      <button type="submit" class="btn btn-primary ms-3">Search</button>
+    </form>
+  </div>
   <table
     class="customm-table table table-success table-striped"
     border="1"
@@ -41,7 +64,7 @@
   >
     <thead>
       <tr>
-        <th>ID</th>
+        <!-- <th>ID</th> -->
         <th>Name</th>
         <th>Image</th>
         <th style="width: 20%">Description</th>
@@ -54,25 +77,30 @@
         <th style="text-align: center" colspan="2">Action</th>
       </tr>
     </thead>
-    
+
     <tbody>
       <% products.forEach(product => { %>
       <tr>
-        <td><%= product._id %></td>
+        <!-- <td><%= product._id %></td> -->
         <td><%= product.name %></td>
-        <td><img src="<%= product.images[0] %>" alt="image" style="max-width: 60px;"> </td>
-        <td><%= product.description.slice(0,40) + (product.description.length > 50?'...':'') %></td>
+        <td>
+          <img
+            src="<%= product.images[0] %>"
+            alt="image"
+            style="max-width: 60px"
+          />
+        </td>
+        <td>
+          <%= product.description.slice(0,40) + (product.description.length >
+          50?'...':'') %>
+        </td>
         <td><%= product.price %></td>
         <td>
-        <% if(product.categories.length>0){ %>
-            <%= product.categories[0].name %>
-            <% }else{ %>
-            No Category
-            <% } %>
-            
+          <% if(product.categories.length>0){ %> <%= product.categories[0].name
+          %> <% }else{ %> No Category <% } %>
         </td>
         <td><%= product.quantity %></td>
-        
+
         <td id="status_<%= product._id %>">
           <% if (product.active) { %> Active <% } else { %> Inactive <% } %>
         </td>
@@ -114,6 +142,43 @@
     </tbody>
   </table>
 
+  <div class="d-flex justify-content-center">
+    <% if (totalPages > 1) { %>
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="/admin/load-products?page=<%= currentPage - 1 %>&search=<%= searchQuery %>"
+            style="background-color: #76ac93; color: black"
+            >Previous</a
+          >
+        </li>
+        <% } %> <% for(let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+          <a
+            class="page-link"
+            href="/admin/load-products?page=<%= i %>&search=<%= searchQuery %>"
+            style="background-color: #76ac93; color: black"
+            ><%= i %></a
+          >
+        </li>
+        <% } %> <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="/admin/load-products?page=<%= currentPage + 1 %>&search=<%= searchQuery %>"
+            style="background-color: #76ac93; color: black"
+            >Next</a
+          >
+        </li>
+        <% } %>
+      </ul>
+    </nav>
+    <% } %>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <script>
@@ -122,7 +187,6 @@
         const response = await axios.put(
           `/admin/products/${productId}/activate`
         );
-        console.log("Product activated:", response.data);
 
         const statusCell = document.getElementById(`status_${productId}`);
         statusCell.textContent = "Active";
@@ -142,7 +206,6 @@
         const response = await axios.put(
           `/admin/products/${productId}/deactivate`
         );
-        console.log("Product deactivated:", response.data);
 
         const statusCell = document.getElementById(`status_${productId}`);
         statusCell.textContent = "Inactive";
