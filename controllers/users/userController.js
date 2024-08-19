@@ -58,7 +58,7 @@ passport.use(
     {
       clientID: process.env.clientID,
       clientSecret: process.env.clientSecret,
-      callbackURL: "/auth/google/callback",
+      callbackURL: "https://www.chronocraft.xyz/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
