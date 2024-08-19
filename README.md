@@ -14,7 +14,7 @@ Chronocraft is an e-commerce platform for for the mens watches. It features prod
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/chronocraft.git
+   git clone https://github.com/minhajkt/chronocraft.git
 
 2. Navigate to the project directory:
 cd chronocraft
