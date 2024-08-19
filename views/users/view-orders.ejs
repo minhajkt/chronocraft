@@ -185,6 +185,9 @@
           >
         </p>
         <% } %>
+     <% if (order.discount > 0) { %>
+                <p>Price: ₹ <%= order.priceAfterDiscount %></p>
+            <% } %>
       </div>
       <div>
         <a href="/view-order-details/<%= order._id %>" class="btn btn-info"
@@ -223,6 +226,7 @@
           Order Returned
         </p>
         <%} %>
+        
       </div>
     </div>
 
@@ -238,7 +242,9 @@
       <div class="product-info">
         <p class="product-name">Name: <%= item.product.name %></p>
         <p class="product-quantity">Quantity: <%= item.quantity %></p>
+        <% if (!order.discount > 0) { %>
         <p class="product-price">Price: ₹ <%= item.product.price %></p>
+        <% } %>
       </div>
       <div class="order-status"></div>
     </div>
