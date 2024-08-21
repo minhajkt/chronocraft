@@ -221,8 +221,14 @@
 
       function downloadPDF() {
         const doc = new jsPDF();
-        doc.text("Sales Report", 20, 20);
+        doc.setFontSize(16);
+        doc.text("Sales Report", 90, 20);
+        
+        doc.setFontSize(10);
+        const date = new Date()
+        const dateString = date.toLocaleDateString()
 
+        doc.text("Generated Date :"+ dateString,15,30)
         const tableData = reportData.map((row) => [
           row._id,
           row.totalSalesCount,
@@ -240,10 +246,14 @@
             ],
           ],
           body: tableData,
+          startY: 35,
         });
 
         doc.addPage();
-        doc.text("Detailed Orders", 20, 20);
+        doc.setFontSize(10);
+        doc.text("Generated Date :"+ dateString,15,30)
+        doc.setFontSize(16);
+        doc.text("Detailed Orders", 90, 20);
 
         const detailedTableData = Array.from(
           document.querySelectorAll("#detailedOrdersTable tbody tr")
@@ -264,7 +274,7 @@
             ],
           ],
           body: detailedTableData,
-          startY: 30,
+          startY: 35,
         });
 
         doc.save("sales-report.pdf");
