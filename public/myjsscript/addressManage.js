@@ -196,7 +196,7 @@
 
             $.ajax({
                 url: '/delete-address',
-                method: 'POST',
+                method: 'DELETE',
                 data: { id: addressId },
                 success: function(response) {
                     if (response.success) {

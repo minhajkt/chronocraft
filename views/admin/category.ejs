@@ -35,7 +35,7 @@
                 <div class="row">
                     <div class="d-flex justify-content-end">
                         <div style="text-align: end">
-                            <a href="/admin/category/add-category" class="btn btn-success btn-lg gradient-custom-4 text-body" style="background-color: green !important; color: white">Add Category</a>
+                            <a href="/admin/category/add" class="btn btn-success btn-lg gradient-custom-4 text-body" style="background-color: green !important; color: white">Add Category</a>
                         </div>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                         </td>
                         <td> <a href="/admin/category/edit-category?id=<%= category._id %>">Edit</a></td>
                         <td>
-                            <form method="POST" action="/admin/category/toggle-status/<%= category._id %>">
+                            <form method="POST" action="/admin/category/status/<%= category._id %>">
                                 <input type="hidden" name="categoryId" value="<%= category._id %>">
                                 <% if (category.active) { %>
                                     <button type="submit" class="btn active" style="background-color: red !important; color: white; width: 6rem;">Deactivate</button>

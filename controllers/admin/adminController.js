@@ -469,9 +469,7 @@ const addProducts = async (req, res) => {
     });
 
     await product.save();
-    res.redirect(
-      "/admin/load-products?prodAddSuccess=Product added Successfully"
-    );
+    res.redirect("/admin/products?prodAddSuccess=Product added Successfully");
   } catch (error) {
     console.log("Error adding product:", error.message);
     res.status(500).send("Error adding product");
@@ -488,7 +486,7 @@ const editProduct = async (req, res) => {
     if (productData) {
       res.render("admin/edit-product", { product: productData, categories });
     } else {
-      res.redirect("/admin/load-products");
+      res.redirect("/admin/products");
     }
   } catch (error) {
     console.log(error.message);
@@ -544,16 +542,14 @@ const updateProduct = async (req, res) => {
     );
 
     if (updatedProduct) {
-      res.redirect(
-        "/admin/load-products?updatemsg=Product Updated Successfully"
-      );
+      res.redirect("/admin/products?updatemsg=Product Updated Successfully");
     } else {
-      res.redirect("/admin/load-products?errormsg=Failed to update product");
+      res.redirect("/admin/products?errormsg=Failed to update product");
     }
   } catch (error) {
     console.log(error.message);
     res.redirect(
-      "/admin/load-products?errormsg=" + encodeURIComponent(error.message)
+      "/admin/products?errormsg=" + encodeURIComponent(error.message)
     );
   }
 };
@@ -564,15 +560,14 @@ const deleteImage = async (req, res) => {
 
     if (!productId || !image) {
       return res.redirect(
-        "/admin/load-products?errormsg=" +
+        "/admin/products?errormsg=" +
           encodeURIComponent("Invalid product ID or image")
       );
     }
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.redirect(
-        "/admin/load-products?errormsg=" +
-          encodeURIComponent("Invalid product ID")
+        "/admin/products?errormsg=" + encodeURIComponent("Invalid product ID")
       );
     }
 
@@ -581,18 +576,17 @@ const deleteImage = async (req, res) => {
 
     if (!product) {
       return res.redirect(
-        "/admin/load-products?errormsg=" +
-          encodeURIComponent("Product not found")
+        "/admin/products?errormsg=" + encodeURIComponent("Product not found")
       );
     }
     product.images = product.images.filter((img) => img !== image);
     await product.save();
 
-    res.redirect(`/admin/products/edit-product?id=${productId}`);
+    res.redirect(`/admin/products/edit?id=${productId}`);
   } catch (error) {
     console.error("Failed to delete image:", error.message);
     res.redirect(
-      "/admin/load-products?errormsg=" + encodeURIComponent(error.message)
+      "/admin/products?errormsg=" + encodeURIComponent(error.message)
     );
   }
 };

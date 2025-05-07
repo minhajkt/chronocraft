@@ -29,7 +29,7 @@
 
     </div><br>
     <div class="col-lg-8">
-        <form action="/admin/users-list" method="get" class="d-flex justify-content-center mb-4 mt-4">
+        <form action="/admin/users" method="get" class="d-flex justify-content-center mb-4 mt-4">
           <input type="text" name="search" id="" placeholder="search users ..." class="form-control" style="border-radius: 8px;" value="<%= searchQuery %>">
           <button type="submit" class="btn btn-primary ms-3">Search</button>
         </form> 
@@ -86,19 +86,19 @@
                 <ul class="pagination justify-content-center">
                     <% if (currentPage > 1) { %>
                         <li class="page-item">
-                            <a class="page-link" href="/admin/users-list?page=<%= currentPage - 1 %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;">Previous</a>
+                            <a class="page-link" href="/admin/users?page=<%= currentPage - 1 %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;">Previous</a>
                         </li>
                     <% } %>
                     
                     <% for(let i = 1; i <= totalPages; i++) { %>
                         <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="/admin/users-list?page=<%= i %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;"><%= i %></a>
+                            <a class="page-link" href="/admin/users?page=<%= i %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;"><%= i %></a>
                         </li>
                     <% } %>
                     
                     <% if (currentPage < totalPages) { %>
                         <li class="page-item">
-                            <a class="page-link" href="/admin/users-list?page=<%= currentPage + 1 %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;">Next</a>
+                            <a class="page-link" href="/admin/users?page=<%= currentPage + 1 %>&search=<%= searchQuery %>" style="background-color: #76ac93;color: black;">Next</a>
                         </li>
                     <% } %>
                 </ul>
@@ -115,7 +115,7 @@
 <script>
     async function blockUser(userId) {
         try {
-            const response = await axios.put(`/admin/users-list/${userId}/block`);
+            const response = await axios.put(`/admin/users/${userId}/block`);
 
             const statusCell = document.getElementById(`status_${userId}`);
             statusCell.textContent = 'Blocked';
@@ -133,7 +133,7 @@
 
     async function unblockUser(userId) {
         try {
-            const response = await axios.put(`/admin/users-list/${userId}/unblock`);
+            const response = await axios.put(`/admin/users/${userId}/unblock`);
 
             const statusCell = document.getElementById(`status_${userId}`);
             statusCell.textContent = 'Active';

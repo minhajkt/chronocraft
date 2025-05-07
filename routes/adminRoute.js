@@ -20,10 +20,13 @@ const validateObjectId = (req, res, next) => {
   next();
 };
 
-admin_route.get("/", auth.isLogout, adminController.loadLogin);
-admin_route.post("/", auth.isLogout, adminController.verifyLogin);
+// admin_route.get("/", auth.isLogout, adminController.loadLogin);
+// admin_route.post("/", auth.isLogout, adminController.verifyLogin);
 
-admin_route.get("/home", auth.isLogin, adminController.loadDashboard);
+admin_route
+  .route("/")
+  .get(auth.isLogout, adminController.loadLogin)
+  .post(auth.isLogout, adminController.verifyLogin);
 
 admin_route.get("/home", auth.isLogin, adminController.loadDashboard);
 
@@ -31,33 +34,31 @@ admin_route.get("/logout", auth.isLogin, adminController.logout);
 
 // routes for userslist for the admin
 
-admin_route.get("/users-list", auth.isLogin, adminController.usersList);
+admin_route.get("/users", auth.isLogin, adminController.usersList);
+
+admin_route.put("/users/:id/block", auth.isLogin, adminController.blockUser);
 
 admin_route.put(
-  "/users-list/:id/block",
-  auth.isLogin,
-  adminController.blockUser
-);
-
-admin_route.put(
-  "/users-list/:id/unblock",
+  "/users/:id/unblock",
   auth.isLogin,
   adminController.unblockUser
 );
 
 // routes for product list for the admin
 
-admin_route.get("/load-products", auth.isLogin, adminController.loadProducts);
-admin_route.get(
-  "/products/add-product",
-  auth.isLogin,
-  adminController.addProducts
-);
-admin_route.post(
-  "/products/add-product",
-  adminController.upload.array("images", 3),
-  adminController.addProducts
-);
+admin_route.get("/products", auth.isLogin, adminController.loadProducts);
+
+// admin_route.get("/products/add", auth.isLogin, adminController.addProducts);
+// admin_route.post(
+//   "/products/add",
+//   adminController.upload.array("images", 3),
+//   adminController.addProducts
+// );
+
+admin_route
+  .route("/products/add")
+  .get(auth.isLogin, adminController.addProducts)
+  .post(adminController.upload.array("images", 3), adminController.addProducts);
 
 admin_route.put(
   "/products/:id/activate",
@@ -71,12 +72,12 @@ admin_route.put(
 );
 
 admin_route.get(
-  "/products/edit-product",
+  "/products/edit",
   auth.isLogin,
   adminController.editProduct
 );
 admin_route.post(
-  "/products/edit-product",
+  "/products/edit",
   adminController.upload.array("images", 10),
   adminController.updateProduct
 );
@@ -88,22 +89,33 @@ admin_route.get("/product/:id", adminController.getSingleProduct);
 
 admin_route.get("/category", adminController.loadCategories);
 
-admin_route.get("/category/add-category", adminController.addCategory);
-admin_route.post("/category/add-category", adminController.addCategory);
+// admin_route.get("/category/add-category", adminController.addCategory);
+// admin_route.post("/category/add-category", adminController.addCategory);
 
-admin_route.get("/category/edit-category", adminController.editCategory);
-admin_route.post("/category/edit-category", adminController.updateCategory);
+admin_route
+  .route("/category/add")
+  .get(adminController.addCategory)   
+  .post(adminController.addCategory); 
 
+// admin_route.get("/category/edit-category", adminController.editCategory);
+// admin_route.post("/category/edit-category", adminController.updateCategory);
+
+
+admin_route
+  .route("/category/edit-category")
+  .get(adminController.editCategory)
+  .post(adminController.updateCategory);
+  
 admin_route.get(
   "/category/:categoryName",
   auth.isLogin,
   adminController.categoryName
 );
 
-admin_route.get("/category", adminController.loadCategories);
+// admin_route.get("/category", adminController.loadCategories);
 
 admin_route.post(
-  "/category/toggle-status/:id",
+  "/category/status/:id",
   adminController.toggleCategoryStatus
 );
 
@@ -125,8 +137,8 @@ admin_route.get(
   adminOrderController.singleOrderDetails
 );
 
-admin_route.post(
-  "/change-status/:orderId",
+admin_route.patch(
+  "/:orderId/status",
   auth.isLogin,
   adminOrderController.changeOrderStatus
 );

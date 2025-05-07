@@ -460,7 +460,7 @@ const cancelOrders = async (req, res) => {
       console.log("No refund needed for COD orders.");
     }
 
-    res.redirect("/view-orders");
+    res.redirect("/orders");
   } catch (error) {
     console.log("Error during order cancellation:", error.message);
     res.status(500).json({ success: false, message: "An error occurred" });

@@ -146,8 +146,8 @@
             button.addEventListener('click', async function() {
                 const productId = this.getAttribute('data-product-id');
                 try {
-                    const response = await fetch('/remove-from-wishlist', {
-                        method: 'POST',
+                    const response = await fetch('/wishlist', {
+                        method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json'
                         },

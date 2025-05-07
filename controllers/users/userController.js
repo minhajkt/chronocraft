@@ -46,6 +46,7 @@ const sendVerifyMail = async (name, email, otp) => {
         console.error("Error sending email:", error);
       } else {
         console.log("Email has been sent:- ", info.response);
+        console.log("otp", otp);
       }
     });
   } catch (error) {
@@ -309,7 +310,6 @@ const loadHomePage = async (req, res) => {
       axios.get("http://localhost:3000/admin/all-categories"),
     ]);
 
-
     // Filter active categories
     const activeCategories = categoriesResponse.data.filter(
       (category) => category.active
@@ -317,7 +317,6 @@ const loadHomePage = async (req, res) => {
     const activeCategoryIds = new Set(
       activeCategories.map((category) => category._id.toString())
     );
-
 
     // Filter active products that belong to active categories
     let products = productsResponse.data.filter((product) => {
@@ -365,12 +364,10 @@ const loadHomePage = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res
-      .status(500)
-      .render("error", {
-        message:
-          "An error occurred while loading the home page. Please try again later.",
-      });
+    res.status(500).render("error", {
+      message:
+        "An error occurred while loading the home page. Please try again later.",
+    });
   }
 };
 
@@ -416,7 +413,7 @@ const loadProducts = async (req, res) => {
     const categories = categoryResponse.data.filter(
       (category) => category.active
     );
-    res.render("users/viewproducts", { products, categories });
+    res.render("users/products", { products, categories });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ error: "Error fetching products" });
@@ -573,12 +570,10 @@ const loadShop = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in loadShop:", error);
-    res
-      .status(500)
-      .render("error", {
-        message:
-          "An error occurred while loading the shop. Please try again later.",
-      });
+    res.status(500).render("error", {
+      message:
+        "An error occurred while loading the shop. Please try again later.",
+    });
   }
 };
 
@@ -648,7 +643,7 @@ const userLogout = async (req, res) => {
 };
 
 const contactDetails = async (req, res) => {
-  res.render("users/contact-us");
+  res.render("users/contact");
 };
 
 const userProfile = async (req, res) => {
@@ -880,12 +875,10 @@ const getWishlist = async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering wishlist:", error.message);
-    res
-      .status(500)
-      .render("error", {
-        message:
-          "An error occurred while loading the wishlist. Please try again later.",
-      });
+    res.status(500).render("error", {
+      message:
+        "An error occurred while loading the wishlist. Please try again later.",
+    });
   }
 };
 

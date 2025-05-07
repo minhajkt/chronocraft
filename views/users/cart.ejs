@@ -191,8 +191,8 @@
 
                             document.getElementById('confirmRemove').addEventListener('click', function() {
                             if (productIdToRemove) {
-                            fetch('/remove-from-cart', {
-                                method: 'POST',
+                            fetch('/cart', {
+                                method: 'DELETE',
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
@@ -331,8 +331,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const updateQuantity = (productId, quantity) => {
             checkStock(productId, quantity).then(stockAvailable => {
                 if (stockAvailable) {
-                    fetch('/update-cart', {
-                        method: 'POST',
+                    fetch('/cart', {
+                        method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json'
                         },

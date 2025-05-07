@@ -24,7 +24,7 @@
         <div class="d-flex justify-content-end">
           <div style="text-align: end">
             <a
-              href="/admin/products/add-product"
+              href="/admin/products/add"
               data-mdb-button-init
               data-mdb-ripple-init
               class="btn btn-success btn-lg gradient-custom-4 text-body"
@@ -37,11 +37,11 @@
     </div>
     <br />
   </div>
-  <!-- <a href="/admin/products/add-product">Add Products</a> -->
+  <!-- <a href="/admin/products/add">Add Products</a> -->
 
   <div class="col-lg-8">
     <form
-      action="/admin/load-products"
+      action="/admin/products"
       method="get"
       class="d-flex justify-content-center mb-4 mt-4"
     >
@@ -108,7 +108,7 @@
         <!-- <td><%= product.sold %></td>
                     <td><%= product.ratings %></td> -->
         <td>
-          <a href="/admin/products/edit-product?id=<%= product._id %>">Edit</a>
+          <a href="/admin/products/edit?id=<%= product._id %>">Edit</a>
         </td>
         <!-- <td><a href="">Delete</a></td> -->
 
@@ -150,7 +150,7 @@
         <li class="page-item">
           <a
             class="page-link"
-            href="/admin/load-products?page=<%= currentPage - 1 %>&search=<%= searchQuery %>"
+            href="/admin/products?page=<%= currentPage - 1 %>&search=<%= searchQuery %>"
             style="background-color: #76ac93; color: black"
             >Previous</a
           >
@@ -159,7 +159,7 @@
         <li class="page-item <%= i === currentPage ? 'active' : '' %>">
           <a
             class="page-link"
-            href="/admin/load-products?page=<%= i %>&search=<%= searchQuery %>"
+            href="/admin/products?page=<%= i %>&search=<%= searchQuery %>"
             style="background-color: #76ac93; color: black"
             ><%= i %></a
           >
@@ -168,7 +168,7 @@
         <li class="page-item">
           <a
             class="page-link"
-            href="/admin/load-products?page=<%= currentPage + 1 %>&search=<%= searchQuery %>"
+            href="/admin/products?page=<%= currentPage + 1 %>&search=<%= searchQuery %>"
             style="background-color: #76ac93; color: black"
             >Next</a
           >

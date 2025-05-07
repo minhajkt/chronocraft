@@ -52,7 +52,7 @@
 
     <form
       id="form"
-      action="/resend-otp"
+      action="/otp/resend"
       method="POST"
       style="margin-top: -40px"
     >
@@ -93,7 +93,7 @@
       }
 
       function fetchOtpExpires(email) {
-        fetch(`/get-otp-expires?email=${email}`)
+        fetch(`/otp/expires?email=${email}`)
           .then((response) => response.json())
           .then((data) => {
             if (data.otpExpires) {

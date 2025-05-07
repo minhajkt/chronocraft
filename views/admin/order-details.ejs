@@ -60,7 +60,7 @@
             <% orders.forEach(order => { %>
               <% order.items.forEach(item => { %>
                 <tr>
-                  <td><%= order.user.name %></td>
+                  <td><%= order.user ? order.user.name :'N/A' %></td>
                   <td><%= item.product.name %></td>
                   <td><%= item.quantity %></td>
                   
@@ -127,8 +127,8 @@
 
 
             if (confirm(`Are you sure you want to change the status to ${newStatus}?`)) {
-                fetch(`/admin/change-status/${orderId}`, {
-                    method: 'POST',
+                fetch(`/admin/${orderId}/status`, {
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',

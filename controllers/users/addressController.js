@@ -53,7 +53,7 @@ const addAddress = async (req, res) => {
     await userData.save();
     req.flash("success", "Address Adding Successful");
 
-    let redirectUrl = req.headers.referer || "/manage-address";
+    let redirectUrl = req.headers.referer || "/address";
     if (req.headers.referer && req.headers.referer.includes("/checkout")) {
       redirectUrl = "/checkout-address";
     }
