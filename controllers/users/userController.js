@@ -29,13 +29,13 @@ const sendVerifyMail = async (name, email, otp) => {
       secure: false,
       requireTLS: true,
       auth: {
-        user: "minhajkt17@gmail.com",
+        user: process.env.authUser,
         pass: process.env.authPassword,
       },
     });
 
     const mailoptions = {
-      from: "minhajkt17@gmail.com",
+      from: process.env.authUser,
       to: email,
       subject: "For verification mail from ChronoCraft",
       html: `<p>Hello${name}. Please use this otp:${otp} to verify your email</p>`,
@@ -122,6 +122,7 @@ const insertUser = async (req, res) => {
 
     const spassword = await securePassword(req.body.password);
     const otp = crypto.randomInt(100000, 999999);
+    console.log('otp',  otp)
     const otpExpires = Date.now() + 60000;
 
     const user = new User({
@@ -710,13 +711,13 @@ const sendResetPasswordEmail = async (email, token) => {
       secure: false,
       requireTLS: true,
       auth: {
-        user: "minhajkt17@gmail.com",
+        user: process.env.authUser,
         pass: process.env.authPassword,
       },
     });
 
     const mailOptions = {
-      from: "minhajkt17@gmail.com",
+      from: process.env.authUser,
       to: email,
       subject: "Password Reset Request",
       html: `<p>You requested for a password reset. Click <a href="http://localhost:3000/reset-password?token=${token}">here</a> to reset your password.</p>`,

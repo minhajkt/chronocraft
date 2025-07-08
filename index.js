@@ -9,6 +9,8 @@ const {setLoginStatus} = require('./middlewares/auth')
 // const ProductRoute = require('./routes/productRoute')
 const passport = require('passport');
 const flash = require('connect-flash')
+const cron = require('node-cron')
+const cleanupUnverifiedUsers = require('./utils/cleanup')
 
 const app = express()
 const nocache = require('nocache')
@@ -20,7 +22,10 @@ const port = process.env.PORT || 3000;
 
 connectdb();
 
-
+cron.schedule("0 0 * * *", () => {
+  console.log("Running unverified user cleanup...");
+  cleanupUnverifiedUsers();
+});
 
 app.use(session({
     secret: 'secretKey',
