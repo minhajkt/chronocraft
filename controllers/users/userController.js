@@ -59,7 +59,8 @@ passport.use(
     {
       clientID: process.env.clientID,
       clientSecret: process.env.clientSecret,
-      callbackURL: "https://www.chronocraft.xyz/auth/google/callback",
+      // callbackURL: "https://www.chronocraft.xyz/auth/google/callback",
+      callbackURL: `${process.env.BASE_URL}/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -85,8 +86,8 @@ passport.use(
         console.log(error.message);
         return done(error, null);
       }
-    }
-  )
+    },
+  ),
 );
 
 // Serialize and deserialize user sessions (required by Passport)
@@ -122,7 +123,7 @@ const insertUser = async (req, res) => {
 
     const spassword = await securePassword(req.body.password);
     const otp = crypto.randomInt(100000, 999999);
-    console.log('otp',  otp)
+    console.log("otp", otp);
     const otpExpires = Date.now() + 60000;
 
     const user = new User({
@@ -307,27 +308,27 @@ const loadHomePage = async (req, res) => {
 
     // Fetch products and categories
     const [productsResponse, categoriesResponse] = await Promise.all([
-      axios.get("http://localhost:3000/admin/all-products"),
-      axios.get("http://localhost:3000/admin/all-categories"),
+      axios.get(`${process.env.BASE_URL}/admin/all-products`),
+      axios.get(`${process.env.BASE_URL}/admin/all-categories`),
     ]);
 
     // Filter active categories
     const activeCategories = categoriesResponse.data.filter(
-      (category) => category.active
+      (category) => category.active,
     );
     const activeCategoryIds = new Set(
-      activeCategories.map((category) => category._id.toString())
+      activeCategories.map((category) => category._id.toString()),
     );
 
     // Filter active products that belong to active categories
     let products = productsResponse.data.filter((product) => {
       const productCategoryIds = product.categories.map((category) =>
-        category._id.toString()
+        category._id.toString(),
       );
       return (
         product.active &&
         productCategoryIds.some((categoryId) =>
-          activeCategoryIds.has(categoryId)
+          activeCategoryIds.has(categoryId),
         )
       );
     });
@@ -338,7 +339,7 @@ const loadHomePage = async (req, res) => {
       const userId = await User.findById(user).populate("wishlist");
       if (userId && userId.wishlist) {
         wishlistProducts = userId.wishlist.map((product) =>
-          product._id.toString()
+          product._id.toString(),
         );
       }
     }
@@ -351,7 +352,7 @@ const loadHomePage = async (req, res) => {
           (product.description &&
             product.description
               .toLowerCase()
-              .includes(searchQuery.toLowerCase()))
+              .includes(searchQuery.toLowerCase())),
       );
     }
 
@@ -365,7 +366,8 @@ const loadHomePage = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(500).render("error", {
+    // res.status(500).render("error", {
+    res.send("Something went wrong", {
       message:
         "An error occurred while loading the home page. Please try again later.",
     });
@@ -375,15 +377,13 @@ const loadHomePage = async (req, res) => {
 const loadHome = async (req, res) => {
   try {
     const userData = await User.findOne({ _id: req.session.user_id });
-    const response = await axios.get(
-      "http://localhost:3000/admin/all-products"
-    );
+    const response = await axios.get(`${process.env.BASE_URL}/admin/all-products`);
     const categoryResponse = await axios.get(
-      "http://localhost:3000/admin/all-categories"
+      `${process.env.BASE_URL}/admin/all-categories`,
     );
     const products = response.data.filter((product) => product.active);
     const categories = categoryResponse.data.filter(
-      (category) => category.active
+      (category) => category.active,
     );
     if (userData) {
       res.render("home", {
@@ -404,15 +404,13 @@ const loadHome = async (req, res) => {
 
 const loadProducts = async (req, res) => {
   try {
-    const response = await axios.get(
-      "http://localhost:3000/admin/all-products"
-    );
+    const response = await axios.get(`${process.env.BASE_URL}/admin/all-products`);
     const categoryResponse = await axios.get(
-      "http://localhost:3000/admin/all-categories"
+      `${process.env.BASE_URL}/admin/all-categories`,
     );
     const products = response.data.filter((product) => product.active);
     const categories = categoryResponse.data.filter(
-      (category) => category.active
+      (category) => category.active,
     );
     res.render("users/products", { products, categories });
   } catch (error) {
@@ -441,15 +439,15 @@ const loadShop = async (req, res) => {
     const user = await User.findById(userId);
 
     const [productsResponse, categoriesResponse] = await Promise.all([
-      axios.get("http://localhost:3000/admin/all-products"),
-      axios.get("http://localhost:3000/admin/all-categories"),
+      axios.get(`${process.env.BASE_URL}/admin/all-products`),
+      axios.get(`${process.env.BASE_URL}/admin/all-categories`),
     ]);
 
     const activeCategories = categoriesResponse.data.filter(
-      (category) => category.active
+      (category) => category.active,
     );
     const activeCategoryIds = activeCategories.map((category) =>
-      category._id.toString()
+      category._id.toString(),
     );
 
     let activeProducts = productsResponse.data.filter((product) => {
@@ -468,9 +466,9 @@ const loadShop = async (req, res) => {
       activeProducts = activeProducts.filter((product) =>
         product.categories.some((category) =>
           selectedCategories.includes(
-            category._id ? category._id.toString() : category.toString()
-          )
-        )
+            category._id ? category._id.toString() : category.toString(),
+          ),
+        ),
       );
     }
 
@@ -489,7 +487,7 @@ const loadShop = async (req, res) => {
           (product.description &&
             product.description
               .toLowerCase()
-              .includes(searchQuery.toLowerCase()))
+              .includes(searchQuery.toLowerCase())),
       );
     }
 
@@ -503,7 +501,7 @@ const loadShop = async (req, res) => {
     }
 
     activeProducts = activeProducts.filter(
-      (product) => product.price >= minPrice && product.price <= maxPrice
+      (product) => product.price >= minPrice && product.price <= maxPrice,
     );
 
     let sortedProducts;
@@ -548,7 +546,7 @@ const loadShop = async (req, res) => {
       const cart = await Cart.findOne({ userId }).populate("product.productId");
       if (cart) {
         cartProducts = cart.product.map((item) =>
-          item.productId._id.toString()
+          item.productId._id.toString(),
         );
       }
     }
@@ -571,7 +569,8 @@ const loadShop = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in loadShop:", error);
-    res.status(500).render("error", {
+    // res.status(500).render("error", {
+    res.send("Something went wrong", {
       message:
         "An error occurred while loading the shop. Please try again later.",
     });
@@ -612,7 +611,7 @@ const loadProductDetails = async (req, res) => {
     const products = await Product.find();
     const productId = req.params.id;
     const response = await axios.get(
-      `http://localhost:3000/admin/product/${productId}`
+      `${process.env.BASE_URL}/admin/product/${productId}`,
     );
     const product = response.data;
 
@@ -690,7 +689,7 @@ const updateProfile = async (req, res) => {
           mobile: mobile,
         },
       },
-      { new: true }
+      { new: true },
     );
     if (userData) {
       req.flash("success", "User Details Edited Successfully");
@@ -720,7 +719,7 @@ const sendResetPasswordEmail = async (email, token) => {
       from: process.env.authUser,
       to: email,
       subject: "Password Reset Request",
-      html: `<p>You requested for a password reset. Click <a href="http://localhost:3000/reset-password?token=${token}">here</a> to reset your password.</p>`,
+      html: "<p>You requested for a password reset. Click <a href=`${process.env.BASE_URL}/reset-password?token=${token}`>here</a> to reset your password.</p>",
     };
 
     await transporter.sendMail(mailOptions);
@@ -746,9 +745,12 @@ const forgotPassword = async (req, res) => {
 
     await sendResetPasswordEmail(user.email, token);
     res.redirect(
-      "/forgot-password?passwordMsg=Password Reset Link has been sent to your Email"
+      "/forgot-password?passwordMsg=Password Reset Link has been sent to your Email",
     );
-    console.log("token", `http://localhost:3000/reset-password?token=${token}`);
+    console.log(
+      "token",
+      `${process.env.BASE_URL}/reset-password?token=${token}`,
+    );
   } catch (error) {
     console.error("Error in forgotPassword:", error);
     res.status(500).send("Internal Server Error");
@@ -769,7 +771,7 @@ const resetPassword = async (req, res) => {
     user.resetPasswordExpires = undefined;
     await user.save();
     res.redirect(
-      "/reset-password?successMsg=Your password reset is successfull"
+      "/reset-password?successMsg=Your password reset is successfull",
     );
   } catch (error) {
     console.error("Error in resetPassword:", error);
@@ -866,7 +868,9 @@ const getWishlist = async (req, res) => {
 
     const user = await User.findById(userId).populate("wishlist");
     if (!user) {
-      return res.status(404).render("error", { message: "User not found." });
+      return res.status(404).send("Something went wrong", {
+        message: "User not found.",
+      });
     }
 
     const wishlistProducts = user.wishlist;
@@ -876,7 +880,8 @@ const getWishlist = async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering wishlist:", error.message);
-    res.status(500).render("error", {
+    // res.status(500).render("error", {
+    res.send("Something went wrong", {
       message:
         "An error occurred while loading the wishlist. Please try again later.",
     });

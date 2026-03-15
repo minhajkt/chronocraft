@@ -161,7 +161,8 @@ const viewCart = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in viewCart:", error);
-    res.status(500).render("error", {
+    // res.status(500).render("error", {
+    res.send("Something went wrong", {
       message:
         "An error occurred while viewing the cart. Please try again later.",
     });
